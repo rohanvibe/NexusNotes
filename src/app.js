@@ -3,14 +3,12 @@ import { events } from './core/events.js';
 import { db } from './db/indexeddb.js';
 import { syncEngine } from './core/sync.js';
 
-// Import Components & Engines
+// Import Components
 import { DashboardComponent } from './components/dashboard.js';
 import { EditorComponent } from './components/editor.js';
 import { GraphComponent } from './components/graph.js';
 import { VaultManagerComponent } from './components/vault-manager.js';
 import { SettingsComponent } from './components/settings.js';
-import { CommandPalette } from './components/command-palette.js';
-import { VaultUnlockComponent } from './components/vault-unlock.js';
 
 // Define Route Handlers
 const routes = [
@@ -47,16 +45,25 @@ const routes = [
 
 // Initialize App
 const initApp = async () => {
-    console.log('[Nexus] Booting Knowledge OS...');
+    console.log('[App] Initializing Stitch...');
 
-    // 1. Initial UI Setup (Theme & Accent)
+    // 1. Initial UI Setup (Theme)
     const initTheme = () => {
         const themeBtn = document.getElementById('btn-theme-toggle');
         const themeIcon = document.getElementById('theme-icon');
-        const updateIcon = (isDark) => { if (themeIcon) themeIcon.textContent = isDark ? 'light_mode' : 'dark_mode'; };
+
+        const updateIcon = (isDark) => {
+            if (themeIcon) themeIcon.textContent = isDark ? 'light_mode' : 'dark_mode';
+        };
+
         const isDark = localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
-        document.documentElement.classList.toggle('dark', isDark);
+        if (isDark) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
         updateIcon(isDark);
+
         themeBtn?.addEventListener('click', () => {
             document.documentElement.classList.toggle('dark');
             const isNowDark = document.documentElement.classList.contains('dark');
@@ -67,57 +74,118 @@ const initApp = async () => {
     };
     initTheme();
 
+    // 1.5 Initialize Accent Colors
     const initAccent = () => {
         const savedAccent = localStorage.getItem('accent-color') || '#7c3bed';
         document.documentElement.style.setProperty('--primary-color', savedAccent);
+        // Add style tag for tailwind override
         const style = document.createElement('style');
         style.id = 'accent-style';
-        style.innerHTML = `.text-primary { color: ${savedAccent} !important; } .bg-primary { background-color: ${savedAccent} !important; } .border-primary { border-color: ${savedAccent} !important; } .ring-primary { --tw-ring-color: ${savedAccent} !important; }`;
+        style.innerHTML = `
+            .text-primary { color: ${savedAccent} !important; }
+            .bg-primary { background-color: ${savedAccent} !important; }
+            .border-primary { border-color: ${savedAccent} !important; }
+            .ring-primary { --tw-ring-color: ${savedAccent} !important; }
+        `;
         document.head.appendChild(style);
     };
     initAccent();
 
-    // 2. Initialize Database Engine
+    // 1.6 Global Search Logic
+    const initSearch = () => {
+        const searchBtn = document.getElementById('btn-global-search');
+        const overlay = document.getElementById('search-overlay');
+        const input = document.getElementById('global-search-input');
+        const resultsContainer = document.getElementById('search-results');
+
+        const toggleSearch = (show) => {
+            overlay.classList.toggle('hidden', !show);
+            if (show) input.focus();
+        };
+
+        searchBtn?.addEventListener('click', () => toggleSearch(true));
+        overlay?.addEventListener('click', (e) => {
+            if (e.target === overlay) toggleSearch(false);
+        });
+
+        window.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                toggleSearch(true);
+            }
+            if (e.key === 'Escape') toggleSearch(false);
+        });
+
+        input?.addEventListener('input', async (e) => {
+            const query = e.target.value.toLowerCase();
+            if (!query) {
+                resultsContainer.innerHTML = '<div class="p-8 text-center text-slate-400 italic">Type to search...</div>';
+                return;
+            }
+
+            const notes = await db.getAllNotes();
+            const results = notes.filter(n =>
+                n.title.toLowerCase().includes(query) ||
+                n.content.toLowerCase().includes(query) ||
+                n.tags.some(t => t.toLowerCase().includes(query))
+            );
+
+            if (results.length === 0) {
+                resultsContainer.innerHTML = '<div class="p-8 text-center text-slate-400 italic">No results found for "' + query + '"</div>';
+            } else {
+                resultsContainer.innerHTML = results.map(n => `
+                    <a href="#/editor?id=${n.id}" data-route="#/editor?id=${n.id}" class="block p-4 hover:bg-slate-50 dark:hover:bg-slate-custom/50 rounded-xl transition-colors border-b border-slate-100 dark:border-border-custom last:border-none">
+                        <div class="font-bold text-sm">${n.title || 'Untitled'}</div>
+                        <div class="text-xs text-slate-500 truncate">${n.content.substring(0, 80)}...</div>
+                    </a>
+                `).join('');
+
+                // Re-bind SPA links in search
+                resultsContainer.querySelectorAll('a').forEach(a => {
+                    a.addEventListener('click', () => toggleSearch(false));
+                });
+            }
+        });
+    };
+    initSearch();
+
+    // 2. Initialize Database
     try {
         await db.init();
-
-        // 2.1 Check for Vault Lock status
-        const isVaultEncrypted = await db.getSetting('is_encrypted');
-        if (isVaultEncrypted && !db.vaultKey) {
-            db.isEncrypted = true;
-            const root = document.getElementById('app-root');
-            root.innerHTML = await VaultUnlockComponent.render();
-            VaultUnlockComponent.init();
-            return; // Halt boot until unlocked
-        }
+        console.log('[App] Database ready');
     } catch (err) {
         console.error('[App] Fatal: Initializing database failed:', err);
+        document.getElementById('app-root').innerHTML = `
+            <div class="flex-1 flex flex-col items-center justify-center text-red-500 p-8 text-center">
+                <span class="material-symbols-outlined text-5xl mb-4">error</span>
+                <h2 class="text-2xl font-bold mb-2">Storage Error</h2>
+                <p>Failed to initialize local IndexedDB storage. You may be in incognito mode or your browser is restricting access.</p>
+            </div>
+        `;
         return;
     }
 
-    // 3. Command Palette System
-    const cpRoot = document.getElementById('command-palette-root');
-    if (cpRoot) {
-        cpRoot.innerHTML = await CommandPalette.render();
-        CommandPalette.init();
-        document.getElementById('command-palette-input')?.addEventListener('input', (e) => CommandPalette.handleInput(e));
-
-        // Bind existing search button to CP
-        document.getElementById('btn-global-search')?.addEventListener('click', () => CommandPalette.toggle(true));
+    // 3. Register Service Worker
+    if ('serviceWorker' in navigator) {
+        try {
+            const registration = await navigator.serviceWorker.register('./service-worker.js');
+            console.log('[Service Worker] Registered with scope:', registration.scope);
+        } catch (error) {
+            console.error('[Service Worker] Registration failed:', error);
+        }
     }
 
-    // 4. Router & Sync
+    // 4. Initialize Sync Engine
     await syncEngine.loadQueue();
+
+    // 5. Initialize Router
     const router = new Router(routes);
     await router.init();
+
+    // Attach router to window for global access if needed (e.g. from components)
     window.AppRouter = router;
 
-    // 5. Service Worker
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./service-worker.js').catch(err => console.debug('Offline support pending.'));
-    }
-
-    console.log('[Nexus] Systems Stable.');
+    console.log('[App] Stitch Initialized Successfully.');
 };
 
 if (document.readyState === 'loading') {

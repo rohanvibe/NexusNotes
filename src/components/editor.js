@@ -1,107 +1,76 @@
 import { db } from '../db/indexeddb.js';
-import { KnowledgeEngine } from '../core/knowledge.js';
 
 export const EditorComponent = {
     async render() {
+        // Parse URL params query
         const urlParams = new URLSearchParams(window.location.hash.split('?')[1]);
         const noteId = urlParams.get('id');
         let note = null;
-        let backlinks = [];
 
-        if (noteId && noteId !== 'new') {
+        if (noteId) {
             note = await db.getNote(noteId);
-            backlinks = await KnowledgeEngine.getBacklinks(noteId);
         }
 
         if (!note) {
             note = { title: '', content: '', tags: [] };
         }
 
-        const isLocked = db.isEncrypted && !db.vaultKey;
-
         return `
-        <div class="flex-1 w-full flex h-full fade-in relative overflow-hidden" id="editor-page">
+        <div class="flex-1 w-full max-w-4xl mx-auto px-4 py-8 flex flex-col h-full fade-in relative" id="editor-container" data-note-id="${note.id || 'new'}">
             
-            <!-- Left Sidebar: Backlinks & Metadata (Desktop only) -->
-            <aside class="hidden lg:flex w-72 flex-col border-r border-slate-200 dark:border-border-custom bg-slate-50 dark:bg-slate-900 overflow-y-auto no-scrollbar" id="editor-aside">
-                <div class="p-6 space-y-8">
-                    <div>
-                        <h4 class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-4">Semantic References</h4>
-                        <div class="space-y-2">
-                            ${backlinks.length === 0 ? `
-                                <p class="text-xs text-slate-500 italic">No incoming synapses detected.</p>
-                            ` : backlinks.map(b => `
-                                <a href="#/editor?id=${b.id}" data-route="#/editor?id=${b.id}" class="block p-3 bg-white dark:bg-slate-custom border border-slate-200 dark:border-border-custom rounded-xl hover:border-primary/50 transition-all group">
-                                    <p class="text-xs font-bold text-slate-700 dark:text-slate-300 group-hover:text-primary truncate">${b.title || 'Untitled'}</p>
-                                    <p class="text-[10px] text-slate-400 mt-1 line-clamp-1">${(b.content || '').substring(0, 40)}...</p>
-                                </a>
-                            `).join('')}
-                        </div>
-                    </div>
-
-                    <div>
-                        <h4 class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-4">Vault Status</h4>
-                        <div class="p-3 rounded-xl ${db.isEncrypted ? 'bg-amber-500/10 border border-amber-500/20' : 'bg-green-500/10 border border-green-500/20'}">
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="material-symbols-outlined text-sm ${db.isEncrypted ? 'text-amber-500' : 'text-green-500'}">${db.isEncrypted ? 'lock' : 'lock_open'}</span>
-                                <span class="text-[10px] font-bold uppercase ${db.isEncrypted ? 'text-amber-500' : 'text-green-500'}">${db.isEncrypted ? 'Zero-Knowledge Active' : 'Transparent Layer'}</span>
-                            </div>
-                            <p class="text-[9px] text-slate-500">${db.isEncrypted ? 'Data is encrypted locally using AES-256.' : 'Implicit data storage in local database.'}</p>
-                        </div>
-                    </div>
+            <header class="flex items-center justify-between mb-4 pb-4 border-b border-slate-200 dark:border-border-custom relative z-10 transition-opacity" id="editor-header">
+                <input type="text" id="editor-title" class="text-3xl font-bold bg-transparent border-none outline-none focus:ring-0 w-full placeholder:text-slate-300 dark:placeholder:text-slate-700" placeholder="Note Title Here..." value="${note.title}">
+                <div class="flex items-center gap-2 shrink-0">
+                     <span class="text-xs font-medium text-slate-400 opacity-0 transition-opacity" id="save-status">Saved</span>
+                     
+                     <div class="flex items-center bg-slate-100 dark:bg-slate-800 rounded-lg p-1 ml-2">
+                        <button class="px-3 py-1.5 text-xs font-semibold rounded-md transition-colors bg-white dark:bg-slate-600 text-slate-900 dark:text-white shadow-sm" id="btn-mode-edit">Edit</button>
+                        <button class="px-3 py-1.5 text-xs font-semibold rounded-md transition-colors text-slate-500 hover:text-slate-700 dark:hover:text-slate-300" id="btn-mode-preview">Preview</button>
+                     </div>
+                     
+                     <button class="p-2 ml-2 hover:bg-slate-200 dark:hover:bg-primary/20 rounded-lg transition-colors text-slate-500" id="btn-delete-note" title="Delete Note">
+                        <span class="material-symbols-outlined text-[20px] text-red-400">delete</span>
+                    </button>
                 </div>
-            </aside>
+            </header>
 
-            <!-- Main Editor Area -->
-            <div class="flex-1 flex flex-col h-full bg-white dark:bg-background-dark overflow-hidden relative" id="editor-main">
-                <header class="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-border-custom">
-                    <div class="flex items-center gap-4 flex-1">
-                         <a href="#/" class="lg:hidden p-2 text-slate-400 hover:text-primary"><span class="material-symbols-outlined">arrow_back</span></a>
-                         <input type="text" id="editor-title" class="text-xl font-black bg-transparent border-none outline-none focus:ring-0 w-full placeholder:text-slate-200 dark:placeholder:text-slate-800" placeholder="Heuristic Identifier..." value="${note.title}">
-                    </div>
-                    <div class="flex items-center gap-3">
-                         <span class="text-[10px] font-bold text-slate-400 opacity-0 transition-opacity uppercase tracking-widest" id="save-status">Synced</span>
-                         <div class="flex items-center bg-slate-100 dark:bg-slate-800/50 p-1 rounded-xl">
-                            <button id="btn-mode-edit" class="px-4 py-1.5 text-[10px] font-black uppercase rounded-lg transition-all bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm">Write</button>
-                            <button id="btn-mode-preview" class="px-4 py-1.5 text-[10px] font-black uppercase rounded-lg transition-all text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">View</button>
-                         </div>
-                         <button id="btn-delete-note" class="p-2 text-slate-400 hover:text-red-500 transition-colors"><span class="material-symbols-outlined text-xl">delete</span></button>
-                    </div>
-                </header>
-
-                <div class="px-6 py-2 flex items-center gap-2 border-b border-slate-100 dark:border-border-custom/50">
-                    <span class="material-symbols-outlined text-sm text-slate-300">sell</span>
-                    <input type="text" id="editor-tags" class="text-[10px] font-bold uppercase tracking-widest text-primary bg-transparent border-none outline-none focus:ring-0 flex-1 placeholder:text-slate-300 dark:placeholder:text-slate-700" placeholder="ADD HEURISTIC TAGS..." value="${note.tags.join(', ')}">
-                </div>
-
-                <div class="flex-1 relative flex overflow-hidden">
-                    <textarea id="editor-content" class="absolute inset-0 w-full h-full p-8 bg-transparent border-none outline-none focus:ring-0 text-lg leading-relaxed text-slate-700 dark:text-slate-300 resize-none no-scrollbar placeholder:text-slate-200 dark:placeholder:text-slate-800 z-10 font-mono transition-opacity" placeholder="Commence knowledge synthesis...">${note.content}</textarea>
-                    
-                    <div id="editor-preview" class="absolute inset-0 w-full h-full p-8 overflow-y-auto no-scrollbar prose prose-slate dark:prose-invert max-w-none text-lg leading-relaxed opacity-0 pointer-events-none z-0">
-                        <!-- Markdown Output -->
-                    </div>
-                </div>
-
-                <!-- Footer Stats -->
-                <footer class="px-6 py-2 border-t border-slate-200 dark:border-border-custom bg-slate-50/50 dark:bg-slate-900/50 flex items-center justify-between">
-                    <div class="flex items-center gap-4">
-                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest" id="word-count">0 Semantic Units</span>
-                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest" id="char-count">0 Bytes</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                         <span class="text-[9px] font-black text-slate-500 uppercase">CTRL + S TO SYNC</span>
-                    </div>
-                </footer>
+            <div class="flex gap-2 mb-4 transition-opacity" id="editor-tags-container">
+               <span class="material-symbols-outlined text-slate-400 self-center">sell</span>
+               <input type="text" id="editor-tags" class="text-sm bg-transparent border-none outline-none focus:ring-0 text-primary font-medium flex-1 placeholder:text-slate-400 dark:placeholder:text-slate-600" placeholder="Add tags separated by comma..." value="${note.tags.join(', ')}">
             </div>
 
-            <!-- Floating Toolbar -->
-            <nav class="fixed bottom-24 left-1/2 -translate-x-1/2 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl border border-slate-200 dark:border-primary/20 rounded-2xl px-4 py-2 flex items-center gap-2 shadow-2xl z-50 transition-all hover:-translate-y-1" id="editor-toolbar">
-                <button class="p-2 hover:bg-primary/10 rounded-xl transition-all group" data-format="bold" title="Bold"><span class="material-symbols-outlined text-slate-500 group-hover:text-primary">format_bold</span></button>
-                <button class="p-2 hover:bg-primary/10 rounded-xl transition-all group" data-format="italic" title="Italic"><span class="material-symbols-outlined text-slate-500 group-hover:text-primary">format_italic</span></button>
-                <button class="p-2 hover:bg-primary/10 rounded-xl transition-all group" data-format="link" title="Link"><span class="material-symbols-outlined text-slate-500 group-hover:text-primary">link</span></button>
-                <button class="p-2 hover:bg-primary/10 rounded-xl transition-all group" data-format="wikilink" title="Wiki Link"><span class="material-symbols-outlined text-slate-500 group-hover:text-primary">link_off</span></button>
-                <div class="w-px h-6 bg-slate-200 dark:bg-slate-700 mx-1"></div>
-                <button class="p-2 hover:bg-primary/10 rounded-xl transition-all group" id="btn-focus-mode" title="Focus Mode"><span class="material-symbols-outlined text-slate-500 group-hover:text-primary">visibility_off</span></button>
+            <div class="relative flex-1 flex flex-col w-full h-full pb-32">
+                <textarea id="editor-content" class="absolute inset-0 w-full h-full bg-transparent border-none outline-none focus:ring-0 text-lg leading-relaxed text-slate-700 dark:text-slate-300 resize-none no-scrollbar placeholder:text-slate-300 dark:placeholder:text-slate-700 z-10 transition-opacity">${note.content}</textarea>
+                
+                <div id="editor-preview" class="absolute inset-0 w-full h-full overflow-y-auto no-scrollbar prose prose-slate dark:prose-invert max-w-none text-lg leading-relaxed opacity-0 pointer-events-none z-0">
+                    <!-- Markdown gets compiled here -->
+                </div>
+            </div>
+
+            <!-- Bottom floating toolbar -->
+            <nav class="fixed bottom-24 md:bottom-20 left-1/2 -translate-x-1/2 w-[90%] max-w-lg z-40 transition-all duration-300 hover:-translate-y-2 opacity-90 hover:opacity-100" id="editor-toolbar">
+                <div class="bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl border border-slate-200 dark:border-primary/30 rounded-full px-4 py-2 flex items-center justify-between shadow-2xl">
+                    <div class="flex items-center gap-1">
+                        <button class="p-2 hover:bg-slate-100 dark:hover:bg-primary/20 rounded-full transition-colors group" data-format="bold" title="Bold (Ctrl+B)">
+                            <span class="material-symbols-outlined block text-slate-600 dark:text-slate-300 group-hover:text-primary">format_bold</span>
+                        </button>
+                        <button class="p-2 hover:bg-slate-100 dark:hover:bg-primary/20 rounded-full transition-colors group" data-format="italic" title="Italic (Ctrl+I)">
+                            <span class="material-symbols-outlined block text-slate-600 dark:text-slate-300 group-hover:text-primary">format_italic</span>
+                        </button>
+                        <button class="p-2 hover:bg-slate-100 dark:hover:bg-primary/20 rounded-full transition-colors group" data-format="link" title="Link (Ctrl+K)">
+                            <span class="material-symbols-outlined block text-slate-600 dark:text-slate-300 group-hover:text-primary">link</span>
+                        </button>
+                        <button class="p-2 hover:bg-slate-100 dark:hover:bg-primary/20 rounded-full transition-colors group" data-format="list" title="Bulleted List">
+                            <span class="material-symbols-outlined block text-slate-600 dark:text-slate-300 group-hover:text-primary">format_list_bulleted</span>
+                        </button>
+                    </div>
+                     <div class="pl-3 border-l border-slate-200 dark:border-primary/20">
+                        <button id="btn-focus-mode" class="flex items-center gap-2 bg-primary px-4 py-1.5 rounded-full text-white text-xs font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
+                            <span class="material-symbols-outlined text-[16px]">visibility_off</span>
+                            <span>FOCUS</span>
+                        </button>
+                    </div>
+                </div>
             </nav>
         </div>
         `;
@@ -113,8 +82,6 @@ export const EditorComponent = {
         const tagsEl = container.querySelector('#editor-tags');
         const statusEl = container.querySelector('#save-status');
         const previewEl = container.querySelector('#editor-preview');
-        const wordCountEl = container.querySelector('#word-count');
-        const charCountEl = container.querySelector('#char-count');
 
         const btnEdit = container.querySelector('#btn-mode-edit');
         const btnPreview = container.querySelector('#btn-mode-preview');
@@ -122,31 +89,58 @@ export const EditorComponent = {
         const btnFocus = container.querySelector('#btn-focus-mode');
         const toolbar = container.querySelector('#editor-toolbar');
 
-        let noteIdAttr = container.querySelector('#editor-page').getAttribute('data-note-id');
-        let currentNoteId = (new URLSearchParams(window.location.hash.split('?')[1])).get('id');
-        if (currentNoteId === 'new') currentNoteId = null;
+        let noteIdAttr = container.querySelector('#editor-container').getAttribute('data-note-id');
+        let currentNoteId = noteIdAttr === 'new' ? null : noteIdAttr;
 
-        // Stats Update
-        const updateStats = () => {
-            const text = contentEl.value.trim();
-            const words = text ? text.split(/\s+/).length : 0;
-            const chars = new TextEncoder().encode(text).length;
-            wordCountEl.textContent = `${words} Semantic Units`;
-            charCountEl.textContent = `${chars} Bytes`;
+        // Undo/Redo History
+        let history = [{ title: titleEl.value, content: contentEl.value, tags: tagsEl.value }];
+        let historyIndex = 0;
+        const MAX_HISTORY = 50;
+
+        const pushHistory = () => {
+            const state = { title: titleEl.value, content: contentEl.value, tags: tagsEl.value };
+            // Simple string comparison to avoid spam
+            if (JSON.stringify(state) === JSON.stringify(history[historyIndex])) return;
+
+            history = history.slice(0, historyIndex + 1);
+            history.push(state);
+            if (history.length > MAX_HISTORY) history.shift();
+            else historyIndex++;
         };
-        updateStats();
 
-        // Save Logic (Platform Grade)
+        const undo = () => {
+            if (historyIndex > 0) {
+                historyIndex--;
+                const state = history[historyIndex];
+                applyState(state);
+                triggerSave(true); // silent
+            }
+        };
+
+        const redo = () => {
+            if (historyIndex < history.length - 1) {
+                historyIndex++;
+                const state = history[historyIndex];
+                applyState(state);
+                triggerSave(true);
+            }
+        };
+
+        const applyState = (state) => {
+            titleEl.value = state.title;
+            contentEl.value = state.content;
+            tagsEl.value = state.tags;
+        };
+
+        // Save Logic
         let saveTimeout;
         const triggerSave = (isSilent = false) => {
-            if (!isSilent) {
-                statusEl.classList.remove('opacity-0');
-                statusEl.textContent = "SYNCHRONIZING...";
-            }
+            statusEl.classList.remove('opacity-0');
+            statusEl.textContent = "Saving...";
             clearTimeout(saveTimeout);
 
             saveTimeout = setTimeout(async () => {
-                const title = titleEl.value.trim() || "Untitled Entity";
+                const title = titleEl.value.trim() || "Untitled Note";
                 const content = contentEl.value;
                 const tags = tagsEl.value.split(',').map(t => t.trim()).filter(Boolean);
 
@@ -154,29 +148,27 @@ export const EditorComponent = {
                     id: currentNoteId,
                     title: title,
                     content: content,
-                    tags: tags
+                    tags: tags,
+                    updatedAt: Date.now()
                 };
 
                 const id = await db.saveNote(noteObj);
                 const isNew = !currentNoteId;
                 currentNoteId = id;
 
-                // Sync References for Bi-directional linking
-                await KnowledgeEngine.syncReferences(id, content);
-
                 if (isNew) {
-                    window.AppRouter.navigate(`#/editor?id=${id}`, true);
+                    window.AppRouter.navigate(`#/editor?id=${id}`, true); // SILENT Navigate
+                    container.querySelector('#editor-container').setAttribute('data-note-id', id);
+                    noteIdAttr = id;
                 }
 
-                if (!isSilent) {
-                    statusEl.textContent = "STABLE";
-                    setTimeout(() => { if (statusEl.textContent === "STABLE") statusEl.classList.add('opacity-0'); }, 2000);
-                }
-            }, 1000);
+                statusEl.textContent = "Saved";
+                setTimeout(() => { if (statusEl.textContent === "Saved") statusEl.classList.add('opacity-0'); }, 2000);
+            }, 800);
         };
 
         const handleInput = () => {
-            updateStats();
+            pushHistory();
             triggerSave();
         };
 
@@ -184,83 +176,120 @@ export const EditorComponent = {
         contentEl.addEventListener('input', handleInput);
         tagsEl.addEventListener('input', handleInput);
 
-        // Preview Rendering (Advanced)
-        const renderPreview = () => {
-            let html = marked.parse(contentEl.value);
+        // Keyboard Shortcuts
+        container.addEventListener('keydown', (e) => {
+            const isCtrl = e.ctrlKey || e.metaKey;
 
-            // Render Wiki Links: [[Link]] -> <a href="#/editor?tag=Link">Link</a>
-            // Actually, better to link to existing note by title if possible.
-            html = html.replace(/\[\[(.*?)\]\]/g, (match, title) => {
-                return `<a href="#/search?q=${encodeURIComponent(title)}" class="text-primary font-bold hover:underline decoration-2">[[${title}]]</a>`;
-            });
+            if (isCtrl && e.key === 's') {
+                e.preventDefault();
+                triggerSave();
+            }
+            if (isCtrl && e.key === 'z') {
+                e.preventDefault();
+                undo();
+            }
+            if (isCtrl && (e.key === 'y' || (e.shiftKey && e.key === 'Z'))) {
+                e.preventDefault();
+                redo();
+            }
+            if (isCtrl && e.key === 'b') {
+                e.preventDefault();
+                applyFormat('bold');
+            }
+            if (isCtrl && e.key === 'i') {
+                e.preventDefault();
+                applyFormat('italic');
+            }
+            if (isCtrl && e.key === 'k') {
+                e.preventDefault();
+                applyFormat('link');
+            }
+        });
 
-            previewEl.innerHTML = DOMPurify.sanitize(html);
+        const applyFormat = (format) => {
+            const start = contentEl.selectionStart;
+            const end = contentEl.selectionEnd;
+            const text = contentEl.value;
+            const selected = text.substring(start, end);
+            let replacement = "";
+
+            if (format === 'bold') replacement = `**${selected || 'bold text'}**`;
+            if (format === 'italic') replacement = `*${selected || 'italic text'}*`;
+            if (format === 'link') replacement = `[${selected || 'link text'}](url)`;
+            if (format === 'list') replacement = `\n- ${selected || 'list item'}`;
+
+            contentEl.value = text.substring(0, start) + replacement + text.substring(end);
+            contentEl.focus();
+            contentEl.selectionStart = start + (selected ? replacement.length : replacement.length - (format === 'list' ? 0 : 2));
+            contentEl.selectionEnd = contentEl.selectionStart;
+            handleInput();
         };
 
+        // Preview & Edit Toggle Logic
         btnPreview.addEventListener('click', () => {
-            btnPreview.classList.add('bg-white', 'dark:bg-slate-700', 'text-slate-900', 'dark:text-white', 'shadow-sm');
-            btnPreview.classList.remove('text-slate-400');
-            btnEdit.classList.remove('bg-white', 'dark:bg-slate-700', 'text-slate-900', 'dark:text-white', 'shadow-sm');
-            btnEdit.classList.add('text-slate-400');
+            btnPreview.classList.add('bg-white', 'dark:bg-slate-600', 'text-slate-900', 'dark:text-white', 'shadow-sm');
+            btnPreview.classList.remove('text-slate-500');
+
+            btnEdit.classList.remove('bg-white', 'dark:bg-slate-600', 'text-slate-900', 'dark:text-white', 'shadow-sm');
+            btnEdit.classList.add('text-slate-500');
 
             contentEl.classList.add('opacity-0', 'pointer-events-none');
+            contentEl.classList.remove('z-10');
+
             previewEl.classList.remove('opacity-0', 'pointer-events-none', 'z-0');
             previewEl.classList.add('z-10');
-            renderPreview();
+
+            // Compile markdown
+            const raw = contentEl.value;
+            if (window.marked && window.DOMPurify) {
+                previewEl.innerHTML = DOMPurify.sanitize(marked.parse(raw));
+            } else {
+                previewEl.innerHTML = "<p class='text-red-500'>Markdown rendering failed.</p>";
+            }
         });
 
         btnEdit.addEventListener('click', () => {
-            btnEdit.classList.add('bg-white', 'dark:bg-slate-700', 'text-slate-900', 'dark:text-white', 'shadow-sm');
-            btnEdit.classList.remove('text-slate-400');
-            btnPreview.classList.remove('bg-white', 'dark:bg-slate-700', 'text-slate-900', 'dark:text-white', 'shadow-sm');
-            btnPreview.classList.add('text-slate-400');
+            btnEdit.classList.add('bg-white', 'dark:bg-slate-600', 'text-slate-900', 'dark:text-white', 'shadow-sm');
+            btnEdit.classList.remove('text-slate-500');
+
+            btnPreview.classList.remove('bg-white', 'dark:bg-slate-600', 'text-slate-900', 'dark:text-white', 'shadow-sm');
+            btnPreview.classList.add('text-slate-500');
 
             previewEl.classList.add('opacity-0', 'pointer-events-none', 'z-0');
+            previewEl.classList.remove('z-10');
+
             contentEl.classList.remove('opacity-0', 'pointer-events-none');
+            contentEl.classList.add('z-10');
             contentEl.focus();
         });
 
-        // Shortcuts
-        container.addEventListener('keydown', (e) => {
-            const isCtrl = e.ctrlKey || e.metaKey;
-            if (isCtrl && e.key === 's') { e.preventDefault(); triggerSave(); }
-        });
-
-        // Toolbar
-        toolbar.querySelectorAll('[data-format]').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const format = btn.getAttribute('data-format');
-                const start = contentEl.selectionStart;
-                const end = contentEl.selectionEnd;
-                const text = contentEl.value;
-                const selected = text.substring(start, end);
-
-                let replacement = "";
-                if (format === 'bold') replacement = `**${selected || 'text'}**`;
-                if (format === 'italic') replacement = `*${selected || 'text'}*`;
-                if (format === 'link') replacement = `[${selected || 'text'}](URL)`;
-                if (format === 'wikilink') replacement = `[[${selected || 'Note Title'}]]`;
-
-                contentEl.value = text.substring(0, start) + replacement + text.substring(end);
-                contentEl.focus();
-                handleInput();
-            });
-        });
-
+        // Delete Logic
         btnDelete.addEventListener('click', async () => {
-            if (confirm("Terminate this cognitive entity perpetually?")) {
+            if (confirm("Are you sure you want to delete this note?")) {
                 clearTimeout(saveTimeout);
-                if (currentNoteId) await db.deleteNote(currentNoteId);
+                if (currentNoteId) {
+                    await db.deleteNote(currentNoteId);
+                }
                 window.AppRouter.navigate('#/');
             }
         });
 
+        // Focus Mode Logic
         btnFocus.addEventListener('click', () => {
             document.body.classList.toggle('focus-mode');
             const isFocus = document.body.classList.contains('focus-mode');
-            btnFocus.querySelector('span').textContent = isFocus ? "visibility" : "visibility_off";
+            btnFocus.querySelector('span:last-child').textContent = isFocus ? "UNFOCUS" : "FOCUS";
+            container.querySelector('#editor-tags-container').classList.toggle('opacity-0');
         });
 
+        // Toolbar formatting logic
+        toolbar.querySelectorAll('[data-format]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                applyFormat(btn.getAttribute('data-format'));
+            });
+        });
+
+        // Auto focus content slightly delayed
         setTimeout(() => contentEl.focus(), 100);
     }
 }

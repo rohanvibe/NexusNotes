@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nexusnotes-v2';
+const CACHE_NAME = 'stitch-v1';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -7,23 +7,21 @@ const ASSETS_TO_CACHE = [
   './src/styles/main.css',
   './src/core/router.js',
   './src/core/events.js',
-  './src/core/knowledge.js',
-  './src/core/security.js',
   './src/db/indexeddb.js',
   './src/db/fs-access.js',
   './src/components/dashboard.js',
   './src/components/editor.js',
   './src/components/graph.js',
   './src/components/vault-manager.js',
-  './src/components/vault-unlock.js',
-  './src/components/command-palette.js',
   './src/components/settings.js'
 ];
 
+// Install Event: Cache app assets
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('[Nexus SW] Caching core system...');
+      console.log('[Service Worker] Caching app shell...');
+      // We use addAll but wrap in try-catch/individual adds to prevent one failing asset from breaking the whole cache
       return Promise.allSettled(
         ASSETS_TO_CACHE.map(url => cache.add(url).catch(err => console.warn(`Failed to cache ${url}:`, err)))
       );
@@ -32,13 +30,14 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
+// Activate Event: Clean up old caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
           if (cacheName !== CACHE_NAME) {
-            console.log('[Nexus SW] Purging obsolete cache:', cacheName);
+            console.log('[Service Worker] Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
@@ -48,28 +47,50 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
+// Fetch Event: Network-first Strategy for HTML, Cache-first for Assets
 self.addEventListener('fetch', (event) => {
   const request = event.request;
   const url = new URL(request.url);
 
-  if (request.method !== 'GET' || !url.origin.includes(self.location.origin)) return;
+  // Ignore non-GET requests and cross-origin requests
+  if (request.method !== 'GET' || !url.origin.includes(self.location.origin)) {
+    return;
+  }
 
+  // Handle Navigation requests (HTML pages)
   if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(request).catch(() => caches.match('./index.html'))
+      // Always try to serve index.html for navigation due to SPA routing
+      caches.match('./index.html').then(response => {
+        return response || fetch(request);
+      })
     );
     return;
   }
 
+  // Handle other Asset requests (CSS, JS, Images)
   event.respondWith(
     caches.match(request).then((cachedResponse) => {
-      if (cachedResponse) return cachedResponse;
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+
+      // If not in cache, fetch from network and cache it dynamically
       return fetch(request).then((networkResponse) => {
-        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') return networkResponse;
+        // Don't cache bad responses
+        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+          return networkResponse;
+        }
+
         const responseToCache = networkResponse.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(request, responseToCache));
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(request, responseToCache);
+        });
+
         return networkResponse;
-      }).catch(() => { });
+      }).catch(() => {
+        console.error('[Service Worker] Fetch failed, returning offline fallback for:', request.url);
+      });
     })
   );
 });

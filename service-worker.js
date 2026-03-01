@@ -13,7 +13,10 @@ const ASSETS_TO_CACHE = [
   './src/components/editor.js',
   './src/components/graph.js',
   './src/components/vault-manager.js',
-  './src/components/settings.js'
+  './src/components/settings.js',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
+  './icons/icon-512-maskable.png'
 ];
 
 // Install Event: Cache app assets

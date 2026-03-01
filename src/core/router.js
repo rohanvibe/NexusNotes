@@ -12,11 +12,12 @@ export class Router {
         document.body.addEventListener('click', e => {
             const link = e.target.closest('a[data-route]');
             if (link) {
-                // with pure hash routing we don't strictly need this interception,
-                // but we keep it and just set the hash manually.
                 e.preventDefault();
-                const path = link.getAttribute('data-route');
-                this.navigate(path);
+                // Use href if it's a hash link, otherwise use data-route
+                const href = link.getAttribute('href');
+                const route = link.getAttribute('data-route');
+                const target = (href && href.startsWith('#')) ? href : route;
+                this.navigate(target);
             }
         });
     }

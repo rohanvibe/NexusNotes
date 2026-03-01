@@ -266,6 +266,7 @@ export const EditorComponent = {
         // Delete Logic
         btnDelete.addEventListener('click', async () => {
             if (confirm("Are you sure you want to delete this note?")) {
+                clearTimeout(saveTimeout);
                 if (currentNoteId) {
                     await db.deleteNote(currentNoteId);
                 }

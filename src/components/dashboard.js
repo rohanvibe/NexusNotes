@@ -1,4 +1,5 @@
 import { db } from '../db/indexeddb.js';
+import { events } from '../core/events.js';
 
 export const DashboardComponent = {
     async render() {
@@ -31,7 +32,7 @@ export const DashboardComponent = {
             <!-- Quick Actions -->
             <section class="overflow-x-auto no-scrollbar pb-2">
                 <div class="flex gap-3">
-                    <a href="#/editor?id=new" data-route="#/editor" class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-white border border-primary hover:bg-primary/90 transition-all shrink-0 cursor-pointer shadow-lg shadow-primary/20" id="btn-new-note">
+                    <a href="#/editor?id=new" data-route="#/editor?id=new" class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-white border border-primary hover:bg-primary/90 transition-all shrink-0 cursor-pointer shadow-lg shadow-primary/20" id="btn-new-note">
                         <span class="material-symbols-outlined text-xl fill-icon">add</span>
                         <span class="font-medium text-sm">New Note</span>
                     </a>
@@ -140,7 +141,7 @@ export const DashboardComponent = {
             const tagClasses = (n.tags || []).map(t => 'cat-' + t).join(' ');
 
             return `
-                        <a href="#/editor?id=${n.id}" data-route="#/editor" data-tags="${(n.tags || []).join(',')}" 
+                        <a href="#/editor?id=${n.id}" data-route="#/editor?id=${n.id}" data-tags="${(n.tags || []).join(',')}" 
                            class="note-card group flex flex-col p-5 bg-white dark:bg-slate-custom border border-slate-200 dark:border-border-custom rounded-2xl hover:border-primary/50 transition-all hover:shadow-xl hover:shadow-primary/5 cursor-pointer ${tagClasses}">
                             <div class="flex items-start justify-between mb-3">
                                 <div class="size-10 rounded-xl bg-primary/5 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
@@ -170,6 +171,12 @@ export const DashboardComponent = {
         const refreshRoute = () => window.AppRouter.handleRoute(window.location.hash || '#/');
         window.addEventListener('online', refreshRoute);
         window.addEventListener('offline', refreshRoute);
+
+        // Cleanup to avoid memory leaks
+        events.once('route:change:start', () => {
+            window.removeEventListener('online', refreshRoute);
+            window.removeEventListener('offline', refreshRoute);
+        });
 
         // Quick Capture Logic
         const captureBtn = document.getElementById('quick-capture-btn');

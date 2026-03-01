@@ -134,7 +134,7 @@ const initApp = async () => {
                 resultsContainer.innerHTML = '<div class="p-8 text-center text-slate-400 italic">No results found for "' + query + '"</div>';
             } else {
                 resultsContainer.innerHTML = results.map(n => `
-                    <a href="#/editor?id=${n.id}" data-route="#/editor" class="block p-4 hover:bg-slate-50 dark:hover:bg-slate-custom/50 rounded-xl transition-colors border-b border-slate-100 dark:border-border-custom last:border-none">
+                    <a href="#/editor?id=${n.id}" data-route="#/editor?id=${n.id}" class="block p-4 hover:bg-slate-50 dark:hover:bg-slate-custom/50 rounded-xl transition-colors border-b border-slate-100 dark:border-border-custom last:border-none">
                         <div class="font-bold text-sm">${n.title || 'Untitled'}</div>
                         <div class="text-xs text-slate-500 truncate">${n.content.substring(0, 80)}...</div>
                     </a>

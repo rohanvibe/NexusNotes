@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#7c3bed",
+                        "background-light": "#f7f6f8",
+                        "background-dark": "#171121",
+                        "slate-custom": "#1e1a26",
+                        "border-custom": "#2e2839",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col font-display">
+<!-- Header -->
+<header class="flex items-center justify-between px-6 py-4 bg-background-light dark:bg-background-dark border-b border-slate-200 dark:border-border-custom sticky top-0 z-50">
+<div class="flex items-center gap-3">
+<div class="text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">cloud_sync</span>
+</div>
+<h1 class="text-xl font-bold tracking-tight">NexusNotes</h1>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-600 dark:text-slate-400 hover:bg-primary/10 rounded-lg transition-colors">
+<span class="material-symbols-outlined">search</span>
+</button>
+<div class="size-8 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center overflow-hidden">
+<img alt="Profile" class="w-full h-full object-cover" data-alt="User profile circular avatar photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCO46_64D4OZI733nlQL1gTM54Igz152mASc7NOId50IdJNWwIsfAYnJgsb_HeLpjQbdWwEutIpc2RI1jXUTCfF4LDkdd66dk50jhMJ71_-1LfO3QMaoyZ0kHz-WWNZukToR5fWWMLQ011BNob5-RU-LRT4s3MJw8-q922s8XvSJgY6wgyc82SzQ8eHsfLQyKA7pNh-7rMZfnKaTwaH1b37gd2c7eM5XKjpWJnGypiJlqCs6sXrLbeOxh-ke2UNG5fwCSuSmPI6gBVW"/>
+</div>
+</div>
+</header>
+<main class="flex-1 w-full max-w-4xl mx-auto px-4 py-6 space-y-8">
+<!-- Quick Actions -->
+<section class="overflow-x-auto no-scrollbar">
+<div class="flex gap-3 pb-2">
+<button class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-custom border border-slate-300 dark:border-border-custom hover:border-primary/50 transition-all shrink-0">
+<span class="material-symbols-outlined text-primary text-xl">account_balance_wallet</span>
+<span class="font-medium text-sm">Vaults</span>
+</button>
+<button class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-custom border border-slate-300 dark:border-border-custom hover:border-primary/50 transition-all shrink-0">
+<span class="material-symbols-outlined text-primary text-xl">hub</span>
+<span class="font-medium text-sm">Graph</span>
+</button>
+<button class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-custom border border-slate-300 dark:border-border-custom hover:border-primary/50 transition-all shrink-0">
+<span class="material-symbols-outlined text-primary text-xl">folder_managed</span>
+<span class="font-medium text-sm">Projects</span>
+</button>
+<button class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-custom border border-slate-300 dark:border-border-custom hover:border-primary/50 transition-all shrink-0">
+<span class="material-symbols-outlined text-primary text-xl">star</span>
+<span class="font-medium text-sm">Favorites</span>
+</button>
+</div>
+</section>
+<!-- Capture Area -->
+<section class="w-full">
+<div class="relative group">
+<div class="absolute -inset-0.5 bg-gradient-to-r from-primary/20 to-indigo-500/20 rounded-xl blur opacity-30 group-hover:opacity-50 transition duration-1000"></div>
+<div class="relative bg-white dark:bg-slate-custom border border-slate-200 dark:border-border-custom rounded-xl p-4 shadow-sm">
+<textarea class="w-full bg-transparent border-none focus:ring-0 text-lg placeholder:text-slate-400 dark:placeholder:text-slate-600 resize-none h-24 mb-4" placeholder="Brain Dump..."></textarea>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1">
+<button class="p-2 text-slate-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">link</span>
+</button>
+<button class="p-2 text-slate-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">sell</span>
+</button>
+<button class="p-2 text-slate-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">mic</span>
+</button>
+<button class="p-2 text-slate-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">image</span>
+</button>
+</div>
+<button class="bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-lg font-semibold text-sm transition-all shadow-lg shadow-primary/20">
+                            Capture
+                        </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Workspace Pulse -->
+<section>
+<h2 class="text-sm font-semibold uppercase tracking-widest text-slate-500 mb-4 px-1">Workspace Pulse</h2>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+<div class="bg-white dark:bg-slate-custom border border-slate-200 dark:border-border-custom p-4 rounded-xl">
+<p class="text-xs text-slate-500 mb-1">Total Nodes</p>
+<p class="text-2xl font-bold">1,284</p>
+<div class="mt-2 h-1 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[70%]"></div>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-custom border border-slate-200 dark:border-border-custom p-4 rounded-xl">
+<p class="text-xs text-slate-500 mb-1">Active Sync</p>
+<p class="text-2xl font-bold flex items-center gap-2">
+                        2.4<span class="text-sm font-medium text-slate-400">ms</span>
+</p>
+<div class="flex items-center gap-1 mt-2">
+<span class="size-2 bg-green-500 rounded-full animate-pulse"></span>
+<span class="text-[10px] text-green-500 uppercase font-bold">Stable</span>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-custom border border-slate-200 dark:border-border-custom p-4 rounded-xl">
+<p class="text-xs text-slate-500 mb-1">New Links</p>
+<p class="text-2xl font-bold text-primary">+12</p>
+<p class="text-[10px] text-slate-500 mt-2 italic">Last 24 hours</p>
+</div>
+<div class="bg-white dark:bg-slate-custom border border-slate-200 dark:border-border-custom p-4 rounded-xl">
+<p class="text-xs text-slate-500 mb-1">Storage</p>
+<p class="text-2xl font-bold">4.2<span class="text-sm font-medium text-slate-400">GB</span></p>
+<div class="mt-2 h-1 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="bg-indigo-400 h-full w-[42%]"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Recent Activity -->
+<section>
+<div class="flex items-center justify-between mb-4 px-1">
+<h2 class="text-sm font-semibold uppercase tracking-widest text-slate-500">Recent Activity</h2>
+<button class="text-xs text-primary font-medium hover:underline">View All</button>
+</div>
+<div class="space-y-3">
+<div class="group flex items-center gap-4 p-4 bg-white dark:bg-slate-custom border border-slate-200 dark:border-border-custom rounded-xl hover:border-primary/40 transition-colors">
+<div class="size-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">description</span>
+</div>
+<div class="flex-1 min-w-0">
+<h4 class="font-semibold text-sm truncate">Quarterly Strategy Roadmap</h4>
+<div class="flex items-center gap-2 mt-1">
+<span class="text-[10px] bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-500">#planning</span>
+<span class="text-[10px] bg-indigo-100 dark:bg-indigo-900/30 px-2 py-0.5 rounded text-indigo-500">#q3</span>
+<span class="text-[10px] text-slate-400 ml-2">2 mins ago</span>
+</div>
+</div>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-slate-400">more_vert</span>
+</button>
+</div>
+<div class="group flex items-center gap-4 p-4 bg-white dark:bg-slate-custom border border-slate-200 dark:border-border-custom rounded-xl hover:border-primary/40 transition-colors">
+<div class="size-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">link</span>
+</div>
+<div class="flex-1 min-w-0">
+<h4 class="font-semibold text-sm truncate">Bi-Directional Links: A Deep Dive</h4>
+<div class="flex items-center gap-2 mt-1">
+<span class="text-[10px] bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-500">#research</span>
+<span class="text-[10px] text-slate-400 ml-2">45 mins ago</span>
+</div>
+</div>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-slate-400">more_vert</span>
+</button>
+</div>
+<div class="group flex items-center gap-4 p-4 bg-white dark:bg-slate-custom border border-slate-200 dark:border-border-custom rounded-xl hover:border-primary/40 transition-colors">
+<div class="size-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">mic</span>
+</div>
+<div class="flex-1 min-w-0">
+<h4 class="font-semibold text-sm truncate">Voice Memo: Design Sync Recap</h4>
+<div class="flex items-center gap-2 mt-1">
+<span class="text-[10px] bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-500">#audio</span>
+<span class="text-[10px] bg-primary/10 px-2 py-0.5 rounded text-primary">#design</span>
+<span class="text-[10px] text-slate-400 ml-2">2 hours ago</span>
+</div>
+</div>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-slate-400">more_vert</span>
+</button>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Nav Bar -->
+<nav class="sticky bottom-0 w-full bg-white dark:bg-slate-custom border-t border-slate-200 dark:border-border-custom px-4 py-3 pb-6 md:pb-3 flex justify-around items-center">
+<a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">monitoring</span>
+<span class="text-[10px] font-medium">Analytics</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="text-[10px] font-medium">Vault</span>
+</a>
+<a class="flex flex-col items-center gap-1.5 text-primary scale-110" href="#">
+<span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1">home</span>
+<span class="text-[11px] font-bold">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-medium">Profile</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-medium">Settings</span>
+</a>
+</nav>
+</body></html>

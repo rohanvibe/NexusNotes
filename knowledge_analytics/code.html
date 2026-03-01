@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NexusNotes Analytics</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#7c3bed",
+                        "background-light": "#f7f6f8",
+                        "background-dark": "#171121",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .heatmap-cell {
+            aspect-ratio: 1 / 1;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+<header class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-primary/20 p-4">
+<div class="flex items-center justify-between max-w-2xl mx-auto w-full">
+<button class="p-2 hover:bg-primary/10 rounded-full transition-colors">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="text-lg font-bold tracking-tight">Analytics &amp; Insights</h1>
+<button class="p-2 hover:bg-primary/10 rounded-full transition-colors">
+<span class="material-symbols-outlined">share</span>
+</button>
+</div>
+</header>
+<main class="flex-1 overflow-y-auto pb-24">
+<div class="max-w-2xl mx-auto w-full p-4 space-y-6">
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-white dark:bg-primary/5 border border-slate-200 dark:border-primary/20 rounded-xl p-4">
+<p class="text-sm text-slate-500 dark:text-slate-400 font-medium">Learning Velocity</p>
+<div class="flex items-end gap-2 mt-1">
+<span class="text-2xl font-bold">+15%</span>
+<span class="text-emerald-500 text-sm font-medium pb-1 flex items-center">
+<span class="material-symbols-outlined text-xs">trending_up</span> 2.5%
+                        </span>
+</div>
+</div>
+<div class="bg-white dark:bg-primary/5 border border-slate-200 dark:border-primary/20 rounded-xl p-4">
+<p class="text-sm text-slate-500 dark:text-slate-400 font-medium">Notes Created</p>
+<div class="flex items-end gap-2 mt-1">
+<span class="text-2xl font-bold">128</span>
+<span class="text-emerald-500 text-sm font-medium pb-1 flex items-center">
+<span class="material-symbols-outlined text-xs">add</span> 12
+                        </span>
+</div>
+</div>
+</div>
+<section class="bg-white dark:bg-primary/5 border border-slate-200 dark:border-primary/20 rounded-xl p-5">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-bold text-lg">Knowledge Growth</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400">Total XP earned this month</p>
+</div>
+<div class="text-right">
+<span class="text-2xl font-bold block">2,450 XP</span>
+<span class="text-emerald-500 text-xs font-bold">+18% vs last month</span>
+</div>
+</div>
+<div class="h-40 w-full mt-6 relative">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 400 120">
+<defs>
+<lineargradient id="chartGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#7c3bed" stop-opacity="0.3"></stop>
+<stop offset="100%" stop-color="#7c3bed" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<path d="M0,80 Q50,70 100,90 T200,40 T300,60 T400,20 L400,120 L0,120 Z" fill="url(#chartGradient)"></path>
+<path d="M0,80 Q50,70 100,90 T200,40 T300,60 T400,20" fill="none" stroke="#7c3bed" stroke-linecap="round" stroke-width="3"></path>
+</svg>
+<div class="flex justify-between mt-2 px-1 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+<span>W1</span>
+<span>W2</span>
+<span>W3</span>
+<span>W4</span>
+</div>
+</div>
+</section>
+<section>
+<h3 class="font-bold text-lg mb-4 px-1">Activity Heatmap</h3>
+<div class="bg-white dark:bg-primary/5 border border-slate-200 dark:border-primary/20 rounded-xl p-4">
+<div class="grid grid-cols-7 gap-1.5">
+<div class="heatmap-cell rounded-sm bg-primary/40"></div>
+<div class="heatmap-cell rounded-sm bg-primary/10"></div>
+<div class="heatmap-cell rounded-sm bg-primary/60"></div>
+<div class="heatmap-cell rounded-sm bg-primary/20"></div>
+<div class="heatmap-cell rounded-sm bg-primary/10"></div>
+<div class="heatmap-cell rounded-sm bg-primary/80"></div>
+<div class="heatmap-cell rounded-sm bg-primary/40"></div>
+<div class="heatmap-cell rounded-sm bg-primary/10"></div>
+<div class="heatmap-cell rounded-sm bg-primary/90"></div>
+<div class="heatmap-cell rounded-sm bg-primary/20"></div>
+<div class="heatmap-cell rounded-sm bg-primary/10"></div>
+<div class="heatmap-cell rounded-sm bg-primary/50"></div>
+<div class="heatmap-cell rounded-sm bg-primary/10"></div>
+<div class="heatmap-cell rounded-sm bg-primary/30"></div>
+<div class="heatmap-cell rounded-sm bg-primary/10"></div>
+<div class="heatmap-cell rounded-sm bg-primary/20"></div>
+<div class="heatmap-cell rounded-sm bg-primary/10"></div>
+<div class="heatmap-cell rounded-sm bg-primary/10"></div>
+<div class="heatmap-cell rounded-sm bg-primary/70"></div>
+<div class="heatmap-cell rounded-sm bg-primary/100"></div>
+<div class="heatmap-cell rounded-sm bg-primary/20"></div>
+<div class="heatmap-cell rounded-sm bg-primary/10"></div>
+<div class="heatmap-cell rounded-sm bg-primary/10"></div>
+<div class="heatmap-cell rounded-sm bg-primary/40"></div>
+<div class="heatmap-cell rounded-sm bg-primary/10"></div>
+<div class="heatmap-cell rounded-sm bg-primary/10"></div>
+<div class="heatmap-cell rounded-sm bg-primary/10"></div>
+<div class="heatmap-cell rounded-sm bg-primary/20"></div>
+</div>
+<div class="flex items-center justify-end gap-2 mt-4 text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+<span>Less</span>
+<div class="flex gap-1">
+<div class="w-2 h-2 rounded-sm bg-primary/10"></div>
+<div class="w-2 h-2 rounded-sm bg-primary/40"></div>
+<div class="w-2 h-2 rounded-sm bg-primary/70"></div>
+<div class="w-2 h-2 rounded-sm bg-primary/100"></div>
+</div>
+<span>More</span>
+</div>
+</div>
+</section>
+<section>
+<h3 class="font-bold text-lg mb-4 px-1">Notes by Category</h3>
+<div class="space-y-3">
+<div class="bg-white dark:bg-primary/5 border border-slate-200 dark:border-primary/20 rounded-xl p-4 flex items-center gap-4">
+<div class="size-10 rounded-lg bg-blue-500/20 text-blue-500 flex items-center justify-center">
+<span class="material-symbols-outlined">functions</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-center mb-1">
+<span class="font-semibold text-sm">Physics</span>
+<span class="text-sm font-bold text-slate-500">42 notes</span>
+</div>
+<div class="w-full bg-slate-200 dark:bg-primary/10 h-2 rounded-full overflow-hidden">
+<div class="bg-blue-500 h-full rounded-full" style="width: 65%"></div>
+</div>
+</div>
+</div>
+<div class="bg-white dark:bg-primary/5 border border-slate-200 dark:border-primary/20 rounded-xl p-4 flex items-center gap-4">
+<div class="size-10 rounded-lg bg-pink-500/20 text-pink-500 flex items-center justify-center">
+<span class="material-symbols-outlined">palette</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-center mb-1">
+<span class="font-semibold text-sm">Design</span>
+<span class="text-sm font-bold text-slate-500">28 notes</span>
+</div>
+<div class="w-full bg-slate-200 dark:bg-primary/10 h-2 rounded-full overflow-hidden">
+<div class="bg-pink-500 h-full rounded-full" style="width: 45%"></div>
+</div>
+</div>
+</div>
+<div class="bg-white dark:bg-primary/5 border border-slate-200 dark:border-primary/20 rounded-xl p-4 flex items-center gap-4">
+<div class="size-10 rounded-lg bg-emerald-500/20 text-emerald-500 flex items-center justify-center">
+<span class="material-symbols-outlined">person</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-center mb-1">
+<span class="font-semibold text-sm">Personal</span>
+<span class="text-sm font-bold text-slate-500">18 notes</span>
+</div>
+<div class="w-full bg-slate-200 dark:bg-primary/10 h-2 rounded-full overflow-hidden">
+<div class="bg-emerald-500 h-full rounded-full" style="width: 30%"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<nav class="fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-background-dark/80 backdrop-blur-xl border-t border-slate-200 dark:border-primary/20 px-6 py-3 pb-6">
+<div class="max-w-2xl mx-auto flex justify-between items-center">
+<a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Notes</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">search</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Search</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">bar_chart</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Analytics</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Profile</span>
+</a>
+</div>
+</nav>
+</body></html>

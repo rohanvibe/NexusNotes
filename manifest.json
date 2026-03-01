@@ -1,0 +1,71 @@
+{
+  "name": "NexusNotes - Knowledge System",
+  "short_name": "NexusNotes",
+  "description": "Offline-first, local-first power-user knowledge management system.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#7c3bed",
+  "orientation": "any",
+  "categories": [
+    "productivity",
+    "education",
+    "utilities"
+  ],
+  "icons": [
+    {
+      "src": "https://cdn.jsdelivr.net/gh/rohanvibe/nexusnotes/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "https://cdn.jsdelivr.net/gh/rohanvibe/nexusnotes/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=1280&h=720",
+      "sizes": "1280x720",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "NexusNotes Desktop Dashboard"
+    },
+    {
+      "src": "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&q=80&w=750&h=1334",
+      "sizes": "750x1334",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "NexusNotes Mobile View"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "New Note",
+      "short_name": "New Note",
+      "description": "Create a new knowledge node",
+      "url": "./#/editor",
+      "icons": [
+        {
+          "src": "https://cdn.jsdelivr.net/gh/rohanvibe/nexusnotes/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "View Graph",
+      "short_name": "Graph",
+      "description": "Open knowledge graph",
+      "url": "./#/graph",
+      "icons": [
+        {
+          "src": "https://cdn.jsdelivr.net/gh/rohanvibe/nexusnotes/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}

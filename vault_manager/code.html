@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NexusNotes - Vault &amp; Storage</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#7c3bed",
+                        "background-light": "#f7f6f8",
+                        "background-dark": "#171121",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Header -->
+<div class="flex items-center bg-slate-200/50 dark:bg-background-dark/50 sticky top-0 z-10 backdrop-blur-md p-4 justify-between border-b border-slate-300 dark:border-primary/20">
+<div class="text-primary flex size-10 shrink-0 items-center justify-center">
+<span class="material-symbols-outlined text-3xl">shield_lock</span>
+</div>
+<h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-tight flex-1 ml-3">Vault &amp; Storage</h2>
+<div class="flex w-12 items-center justify-end">
+<button class="flex size-10 cursor-pointer items-center justify-center rounded-lg bg-slate-300/50 dark:bg-primary/10 text-slate-900 dark:text-slate-100 hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+</div>
+<!-- Main Content Scroll Area -->
+<div class="flex-1 pb-24">
+<!-- Local Storage Section -->
+<div class="p-4 pt-6">
+<h2 class="text-slate-900 dark:text-slate-100 text-xl font-bold leading-tight tracking-tight mb-4">Local Storage</h2>
+<div class="flex flex-col gap-3 p-5 rounded-xl bg-slate-200 dark:bg-primary/5 border border-slate-300 dark:border-primary/10">
+<div class="flex gap-6 justify-between items-end">
+<p class="text-slate-700 dark:text-slate-300 text-base font-medium">Used Space</p>
+<p class="text-slate-900 dark:text-white text-sm font-bold">12.4 GB / 20 GB</p>
+</div>
+<div class="h-3 rounded-full bg-slate-300 dark:bg-primary/20 overflow-hidden">
+<div class="h-full rounded-full bg-primary" style="width: 65%;"></div>
+</div>
+<div class="flex justify-between">
+<p class="text-slate-500 dark:text-slate-400 text-sm">65% capacity utilized</p>
+<button class="text-primary text-sm font-semibold hover:underline">Manage Quota</button>
+</div>
+</div>
+</div>
+<!-- Vaults List -->
+<div class="px-4 py-4">
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-slate-900 dark:text-slate-100 text-xl font-bold leading-tight tracking-tight">My Vaults</h2>
+<button class="flex items-center gap-1 text-sm font-bold text-primary px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
+<span class="material-symbols-outlined text-sm">add</span> New Vault
+                    </button>
+</div>
+<div class="space-y-3">
+<!-- Vault Item: Personal -->
+<div class="flex items-center gap-4 p-4 rounded-xl bg-slate-200 dark:bg-primary/5 border border-slate-300 dark:border-primary/10">
+<div class="flex size-12 shrink-0 items-center justify-center rounded-lg bg-primary/20 text-primary">
+<span class="material-symbols-outlined">person</span>
+</div>
+<div class="flex-1">
+<h3 class="font-bold text-slate-900 dark:text-slate-100">Personal Notes</h3>
+<div class="flex items-center gap-2 mt-1">
+<span class="flex items-center text-[10px] uppercase tracking-wider font-bold text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded">
+<span class="material-symbols-outlined text-[12px] mr-1">encrypted</span> AES-256
+                                </span>
+<span class="text-xs text-slate-500 dark:text-slate-400">4.2 GB • 152 items</span>
+</div>
+</div>
+<button class="text-slate-400">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<!-- Vault Item: Work -->
+<div class="flex items-center gap-4 p-4 rounded-xl bg-slate-200 dark:bg-primary/5 border border-slate-300 dark:border-primary/10">
+<div class="flex size-12 shrink-0 items-center justify-center rounded-lg bg-primary/20 text-primary">
+<span class="material-symbols-outlined">business_center</span>
+</div>
+<div class="flex-1">
+<h3 class="font-bold text-slate-900 dark:text-slate-100">Work &amp; Projects</h3>
+<div class="flex items-center gap-2 mt-1">
+<span class="flex items-center text-[10px] uppercase tracking-wider font-bold text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded">
+<span class="material-symbols-outlined text-[12px] mr-1">encrypted</span> AES-256
+                                </span>
+<span class="text-xs text-slate-500 dark:text-slate-400">6.8 GB • 89 items</span>
+</div>
+</div>
+<button class="text-slate-400">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<!-- Vault Item: Research -->
+<div class="flex items-center gap-4 p-4 rounded-xl bg-slate-200 dark:bg-primary/5 border border-slate-300 dark:border-primary/10 opacity-80">
+<div class="flex size-12 shrink-0 items-center justify-center rounded-lg bg-slate-400/20 text-slate-400">
+<span class="material-symbols-outlined">science</span>
+</div>
+<div class="flex-1">
+<h3 class="font-bold text-slate-900 dark:text-slate-100">Deep Research</h3>
+<div class="flex items-center gap-2 mt-1">
+<span class="flex items-center text-[10px] uppercase tracking-wider font-bold text-slate-400 bg-slate-400/10 px-1.5 py-0.5 rounded">
+<span class="material-symbols-outlined text-[12px] mr-1">lock_open</span> No Encryption
+                                </span>
+<span class="text-xs text-slate-500 dark:text-slate-400">1.4 GB • 24 items</span>
+</div>
+</div>
+<button class="text-slate-400">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Sync & Network -->
+<div class="px-4 py-4">
+<h2 class="text-slate-900 dark:text-slate-100 text-xl font-bold leading-tight tracking-tight mb-4">Peer-to-Peer Sync</h2>
+<div class="rounded-xl border border-dashed border-slate-400 dark:border-primary/30 p-6 flex flex-col items-center text-center bg-slate-200/50 dark:bg-primary/5">
+<div class="flex size-14 items-center justify-center rounded-full bg-primary/20 text-primary mb-4 animate-pulse">
+<span class="material-symbols-outlined text-3xl">router</span>
+</div>
+<h3 class="font-bold text-slate-900 dark:text-slate-100">Local Network Discovery</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400 mt-2 max-w-[280px]">Syncing with 2 devices nearby via encrypted peer-to-peer connection.</p>
+<div class="flex gap-2 mt-4">
+<div class="size-2 rounded-full bg-emerald-500"></div>
+<div class="size-2 rounded-full bg-emerald-500"></div>
+<div class="size-2 rounded-full bg-slate-400"></div>
+</div>
+<button class="mt-6 w-full py-2 bg-primary text-white font-bold rounded-lg hover:bg-primary/90 transition-all">
+                        Force Sync Now
+                    </button>
+</div>
+</div>
+<!-- Import/Export -->
+<div class="px-4 py-4">
+<h2 class="text-slate-900 dark:text-slate-100 text-xl font-bold leading-tight tracking-tight mb-4">Data Management</h2>
+<div class="grid grid-cols-2 gap-3">
+<button class="flex flex-col items-center gap-2 p-4 rounded-xl bg-slate-200 dark:bg-primary/5 border border-slate-300 dark:border-primary/10 text-slate-700 dark:text-slate-300 hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined">download</span>
+<span class="text-sm font-semibold">Import JSON</span>
+</button>
+<button class="flex flex-col items-center gap-2 p-4 rounded-xl bg-slate-200 dark:bg-primary/5 border border-slate-300 dark:border-primary/10 text-slate-700 dark:text-slate-300 hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined">upload</span>
+<span class="text-sm font-semibold">Export Backup</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Bottom Navigation Bar -->
+<div class="fixed bottom-0 left-0 right-0 z-20 flex flex-col">
+<div class="flex gap-2 border-t border-slate-300 dark:border-primary/20 bg-white/80 dark:bg-background-dark/80 backdrop-blur-lg px-4 pb-6 pt-3 shadow-xl">
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">description</span>
+</div>
+<p class="text-[10px] font-bold uppercase tracking-wider">Notes</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-primary" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined material-symbols-fill text-2xl">shield_lock</span>
+</div>
+<p class="text-[10px] font-bold uppercase tracking-wider">Vault</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">search</span>
+</div>
+<p class="text-[10px] font-bold uppercase tracking-wider">Search</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined text-2xl">account_circle</span>
+</div>
+<p class="text-[10px] font-bold uppercase tracking-wider">Profile</p>
+</a>
+</div>
+</div>
+</div>
+</body></html>

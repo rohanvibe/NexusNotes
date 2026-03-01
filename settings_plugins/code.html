@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NexusNotes - Settings &amp; Plugins</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@300;400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#7c3bed",
+                        "background-light": "#f7f6f8",
+                        "background-dark": "#171121",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(124, 59, 237, 0.2);
+            border-radius: 10px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased overflow-x-hidden">
+<div class="flex flex-col min-h-screen max-w-md mx-auto bg-background-light dark:bg-background-dark border-x border-slate-200 dark:border-primary/20">
+<!-- Header -->
+<header class="sticky top-0 z-10 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-primary/10 px-6 py-4 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-2xl">settings</span>
+<h1 class="text-xl font-bold tracking-tight">NexusNotes</h1>
+</div>
+<button class="p-2 rounded-lg bg-slate-100 dark:bg-primary/10 text-primary">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</header>
+<main class="flex-1 pb-24 overflow-y-auto custom-scrollbar">
+<!-- General Settings Section -->
+<section class="px-6 py-4">
+<h2 class="text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">General Settings</h2>
+<div class="space-y-1">
+<button class="w-full flex items-center justify-between p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-primary/10 transition-colors group">
+<div class="flex items-center gap-4">
+<div class="size-10 rounded-lg bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">person</span>
+</div>
+<span class="font-medium">Account Management</span>
+</div>
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">chevron_right</span>
+</button>
+<button class="w-full flex items-center justify-between p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-primary/10 transition-colors group">
+<div class="flex items-center gap-4">
+<div class="size-10 rounded-lg bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">cloud_sync</span>
+</div>
+<span class="font-medium">Sync &amp; Backup</span>
+</div>
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">chevron_right</span>
+</button>
+</div>
+</section>
+<!-- Appearance Section -->
+<section class="px-6 py-4">
+<h2 class="text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">Appearance</h2>
+<div class="bg-slate-100 dark:bg-primary/5 rounded-2xl p-4 space-y-4 border border-slate-200 dark:border-primary/10">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary">dark_mode</span>
+<span class="font-medium">Dark Mode</span>
+</div>
+<div class="w-12 h-6 bg-primary rounded-full relative cursor-pointer">
+<div class="absolute right-1 top-1 size-4 bg-white rounded-full"></div>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary">palette</span>
+<span class="font-medium">Accent Color</span>
+</div>
+<div class="flex gap-2">
+<div class="size-5 rounded-full bg-primary border-2 border-white dark:border-background-dark ring-2 ring-primary/30"></div>
+<div class="size-5 rounded-full bg-blue-500"></div>
+<div class="size-5 rounded-full bg-emerald-500"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Security Section -->
+<section class="px-6 py-4">
+<h2 class="text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">Security</h2>
+<div class="space-y-1">
+<div class="flex items-center justify-between p-3 rounded-xl">
+<div class="flex items-center gap-4">
+<div class="size-10 rounded-lg bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">fingerprint</span>
+</div>
+<div class="flex flex-col">
+<span class="font-medium">Biometric Unlock</span>
+<span class="text-xs text-slate-500">Use FaceID or Fingerprint</span>
+</div>
+</div>
+<div class="w-12 h-6 bg-slate-300 dark:bg-slate-700 rounded-full relative cursor-pointer">
+<div class="absolute left-1 top-1 size-4 bg-white rounded-full"></div>
+</div>
+</div>
+<button class="w-full flex items-center justify-between p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-primary/10 transition-colors">
+<div class="flex items-center gap-4">
+<div class="size-10 rounded-lg bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">lock</span>
+</div>
+<span class="font-medium">Change Master Password</span>
+</div>
+<span class="material-symbols-outlined text-slate-400">chevron_right</span>
+</button>
+</div>
+</section>
+<!-- Plugin Marketplace Section -->
+<section class="px-6 py-4">
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Plugin Marketplace</h2>
+<span class="text-xs text-primary font-bold cursor-pointer hover:underline">View All</span>
+</div>
+<div class="grid grid-cols-1 gap-4">
+<!-- Plugin Card 1 -->
+<div class="group relative overflow-hidden bg-white dark:bg-primary/5 border border-slate-200 dark:border-primary/10 p-4 rounded-2xl hover:border-primary/40 transition-all">
+<div class="flex items-start gap-4">
+<div class="size-12 rounded-xl bg-slate-100 dark:bg-primary/20 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-3xl">sync_alt</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<h3 class="font-bold">GitHub Sync</h3>
+<span class="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 uppercase font-bold">Popular</span>
+</div>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Two-way sync with your private repositories.</p>
+<div class="flex items-center gap-3 mt-3">
+<button class="px-4 py-1.5 rounded-lg bg-primary text-white text-xs font-bold hover:bg-primary/90 transition-colors">Install</button>
+<div class="flex items-center gap-1 text-[10px] text-slate-400">
+<span class="material-symbols-outlined text-sm">star</span>
+<span>4.9 (2k)</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Plugin Card 2 -->
+<div class="group relative overflow-hidden bg-white dark:bg-primary/5 border border-slate-200 dark:border-primary/10 p-4 rounded-2xl hover:border-primary/40 transition-all">
+<div class="flex items-start gap-4">
+<div class="size-12 rounded-xl bg-slate-100 dark:bg-primary/20 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-3xl">functions</span>
+</div>
+<div class="flex-1">
+<h3 class="font-bold">LaTeX Pro</h3>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Advanced mathematical typesetting and rendering.</p>
+<div class="flex items-center gap-3 mt-3">
+<button class="px-4 py-1.5 rounded-lg bg-primary/10 text-primary border border-primary/20 text-xs font-bold hover:bg-primary hover:text-white transition-all">Install</button>
+<div class="flex items-center gap-1 text-[10px] text-slate-400">
+<span class="material-symbols-outlined text-sm">star</span>
+<span>4.7 (840)</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Plugin Card 3 -->
+<div class="group relative overflow-hidden bg-white dark:bg-primary/5 border border-slate-200 dark:border-primary/10 p-4 rounded-2xl hover:border-primary/40 transition-all">
+<div class="flex items-start gap-4">
+<div class="size-12 rounded-xl bg-slate-100 dark:bg-primary/20 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-3xl">view_kanban</span>
+</div>
+<div class="flex-1">
+<h3 class="font-bold">Kanban Boards</h3>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Convert your lists into interactive visual boards.</p>
+<div class="flex items-center gap-3 mt-3">
+<button class="px-4 py-1.5 rounded-lg bg-primary/10 text-primary border border-primary/20 text-xs font-bold hover:bg-primary hover:text-white transition-all">Install</button>
+<div class="flex items-center gap-1 text-[10px] text-slate-400">
+<span class="material-symbols-outlined text-sm">star</span>
+<span>5.0 (1.2k)</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-xl border-t border-slate-200 dark:border-primary/20 px-6 py-3 pb-6 flex items-center justify-between z-20">
+<a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="text-[10px] font-medium">Notes</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">search</span>
+<span class="text-[10px] font-medium">Search</span>
+</a>
+<div class="relative -mt-10">
+<button class="size-14 rounded-full bg-primary text-white shadow-lg shadow-primary/30 flex items-center justify-center active:scale-95 transition-transform border-4 border-background-light dark:border-background-dark">
+<span class="material-symbols-outlined text-3xl">add</span>
+</button>
+</div>
+<a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">extension</span>
+<span class="text-[10px] font-medium">Plugins</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined fill-current">settings</span>
+<span class="text-[10px] font-bold">Settings</span>
+</a>
+</nav>
+</div>
+</body></html>

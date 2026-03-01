@@ -1,0 +1,60 @@
+/* Utilities required for global app logic, specifically overriding tailwind defaults or adding custom scrollbars */
+body {
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    min-height: max(300px, 100dvh);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Material Symbols Override */
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.material-symbols-outlined.fill-icon {
+    font-variation-settings: 'FILL' 1;
+}
+
+/* Transitions */
+.view-transition-enter {
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+.view-transition-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 300ms ease-out, transform 300ms ease-out;
+}
+
+.view-transition-exit {
+    opacity: 1;
+}
+
+.view-transition-exit-active {
+    opacity: 0;
+    transition: opacity 200ms ease-in;
+}
+
+/* Math font for editor */
+.math-font {
+    font-family: 'Cambria', 'Cochin', Georgia, Times, 'Times New Roman', serif;
+}
+
+/* Focus Mode */
+body.focus-mode #app-header,
+body.focus-mode #app-nav {
+    display: none !important;
+}
+
+body.focus-mode #app-root {
+    max-width: 100% !important;
+}

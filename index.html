@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Stitch - Knowledge System</title>
+
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="./manifest.json" />
+    <meta name="theme-color" content="#7c3bed" />
+    <meta name="description" content="Offline-first, local-first power-user knowledge management system." />
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="https://cdn.jsdelivr.net/gh/rohanvibe/nexusnotes/icon-192.png" />
+
+    <!-- External Libraries -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries,typography"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.9/purify.min.js"></script>
+    <script src="https://unpkg.com/force-graph"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#7c3bed",
+                        "background-light": "#f7f6f8",
+                        "background-dark": "#171121",
+                        "slate-custom": "#1e1a26",
+                        "border-custom": "#2e2839",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <link rel="stylesheet" href="./src/styles/main.css" />
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col font-display">
+
+    <!-- Header App Shell -->
+    <header
+        class="flex items-center justify-between px-6 py-4 bg-background-light dark:bg-background-dark border-b border-slate-200 dark:border-border-custom sticky top-0 z-50 transition-colors"
+        id="app-header">
+        <div class="flex items-center gap-3">
+            <div class="text-primary flex items-center justify-center">
+                <span class="material-symbols-outlined text-3xl">cloud_done</span>
+            </div>
+            <h1 class="text-xl font-bold tracking-tight">NexusNotes</h1>
+            <span
+                class="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-500 ml-2">Local</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <button class="p-2 text-slate-600 dark:text-slate-400 hover:bg-primary/10 rounded-lg transition-colors"
+                id="btn-theme-toggle" title="Toggle Theme">
+                <span class="material-symbols-outlined" id="theme-icon">light_mode</span>
+            </button>
+            <button class="p-2 text-slate-600 dark:text-slate-400 hover:bg-primary/10 rounded-lg transition-colors"
+                id="btn-global-search" title="Search (Ctrl+K)">
+                <span class="material-symbols-outlined">search</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Global Search Overlay (Hidden by default) -->
+    <div id="search-overlay"
+        class="fixed inset-0 bg-background-dark/80 backdrop-blur-md z-[100] hidden flex flex-col items-center pt-24 px-4">
+        <div
+            class="w-full max-w-2xl bg-white dark:bg-slate-custom border border-slate-200 dark:border-border-custom rounded-2xl shadow-2xl overflow-hidden">
+            <div class="p-4 border-b border-slate-200 dark:border-border-custom flex items-center gap-3">
+                <span class="material-symbols-outlined text-slate-400">search</span>
+                <input type="text" id="global-search-input" placeholder="Search notes, tags, content..."
+                    class="w-full bg-transparent border-none outline-none focus:ring-0 text-lg">
+                <kbd
+                    class="text-[10px] bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-slate-400 border border-slate-200 dark:border-border-custom">ESC</kbd>
+            </div>
+            <div id="search-results" class="max-h-[60vh] overflow-y-auto p-2">
+                <div class="p-8 text-center text-slate-400 italic">Type to search your knowledge base...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 w-full flex flex-col mx-auto transition-opacity duration-200 overflow-x-hidden" id="app-root">
+        <!-- Content gets injected here by the router -->
+        <div class="flex-1 flex items-center justify-center min-h-[50vh]">
+            <div class="flex flex-col items-center gap-4 animate-pulse">
+                <span class="material-symbols-outlined text-4xl text-primary animate-spin"
+                    style="animation-duration: 3s;">sync</span>
+                <p class="text-sm font-medium text-slate-500">Initializing Workspace...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Nav Bar App Shell -->
+    <nav class="sticky bottom-0 w-full bg-white dark:bg-slate-custom border-t border-slate-200 dark:border-border-custom px-6 py-2 pb-6 md:pb-2 flex justify-around items-center z-50"
+        id="app-nav">
+        <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors nav-link"
+            href="#/" data-route="#/">
+            <span class="material-symbols-outlined nav-icon">home</span>
+            <span class="text-[10px] font-medium">Home</span>
+        </a>
+        <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors nav-link"
+            href="#/editor" data-route="#/editor">
+            <span class="material-symbols-outlined nav-icon">history_edu</span>
+            <span class="text-[10px] font-medium">Editor</span>
+        </a>
+        <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors nav-link"
+            href="#/graph" data-route="#/graph">
+            <span class="material-symbols-outlined nav-icon">hub</span>
+            <span class="text-[10px] font-medium">Graph</span>
+        </a>
+        <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors nav-link"
+            href="#/vaults" data-route="#/vaults">
+            <span class="material-symbols-outlined nav-icon">inventory_2</span>
+            <span class="text-[10px] font-medium">Vaults</span>
+        </a>
+        <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors nav-link"
+            href="#/settings" data-route="#/settings">
+            <span class="material-symbols-outlined nav-icon">settings</span>
+            <span class="text-[10px] font-medium">Settings</span>
+        </a>
+    </nav>
+
+    <!-- Main Application Script (ES Module) -->
+    <script type="module" src="./src/app.js"></script>
+</body>
+
+</html>

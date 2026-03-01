@@ -76,21 +76,21 @@ export const DashboardComponent = {
             <!-- Workspace Pulse -->
             <section>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div class="bg-white dark:bg-slate-custom border border-slate-200 dark:border-border-custom p-4 rounded-xl">
+                    <div class="bg-white dark:bg-slate-custom border border-slate-200 dark:border-border-custom p-4 rounded-xl" title="The current quantitative density of discrete mnemomic entities within your local repository.">
                         <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Knowledge Density</p>
                         <p class="text-2xl font-black">${notes.length}</p>
                         <div class="mt-2 h-1 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                             <div class="bg-primary h-full" style="width: ${Math.min((notes.length / 100) * 100, 100)}%"></div>
                         </div>
                     </div>
-                    <div class="bg-white dark:bg-slate-custom border border-slate-200 dark:border-border-custom p-4 rounded-xl">
+                    <div class="bg-white dark:bg-slate-custom border border-slate-200 dark:border-border-custom p-4 rounded-xl" title="The aggregate of established syntactical associative links facilitated by shared heuristic tags.">
                         <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Network Links</p>
                         <p class="text-2xl font-black">${edges.length}</p>
                         <div class="mt-2 h-1 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                             <div class="bg-indigo-500 h-full" style="width: ${Math.min((edges.length / 50) * 100, 100)}%"></div>
                         </div>
                     </div>
-                    <div class="bg-white dark:bg-slate-custom border border-slate-200 dark:border-border-custom p-4 rounded-xl">
+                    <div class="bg-white dark:bg-slate-custom border border-slate-200 dark:border-border-custom p-4 rounded-xl" title="The chronological increment of data ingestion within the preceding diurnal cycle.">
                         <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Recent Growth</p>
                         <p class="text-2xl font-black text-primary">+${last24hCount}</p>
                         <p class="text-[10px] text-slate-500 mt-2 italic flex items-center gap-1">
@@ -98,7 +98,7 @@ export const DashboardComponent = {
                             Last 24 hours
                         </p>
                     </div>
-                    <div class="bg-white dark:bg-slate-custom border border-slate-200 dark:border-border-custom p-4 rounded-xl">
+                    <div class="bg-white dark:bg-slate-custom border border-slate-200 dark:border-border-custom p-4 rounded-xl" title="The total volumetric displacement occupied by the knowledge system on the local storage medium.">
                         <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Local Footprint</p>
                         <p class="text-2xl font-black">${storageUsage}</p>
                         <div class="mt-2 h-1 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">

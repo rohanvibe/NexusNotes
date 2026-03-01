@@ -1,41 +1,50 @@
 /**
- * Local IndexedDB Abstraction Layer for Stitch
- * Handles storage of Notes, Edges (Graph), and Tags locally.
+ * NexusNotes Storage Engine
+ * Market-competitive, multi-vault, local-first database on IndexedDB.
  */
 
-const DB_NAME = 'StitchDB';
-const DB_VERSION = 1;
+import { SecurityEngine } from '../core/security.js';
 
-export class LocalDB {
+export class StorageEngine {
     constructor() {
         this.db = null;
+        this.currentVault = localStorage.getItem('nexus_current_vault') || 'NexusDefault';
+        this.vaultKey = null; // Stored only in memory!
+        this.isEncrypted = false;
     }
 
     /**
-     * Initialize the local IndexedDB database
-     * @returns {Promise<boolean>} success
+     * Initialize/Connect to a specific vault (IndexedDB database).
+     * @param {string} vaultName 
      */
-    async init() {
+    async init(vaultName = this.currentVault) {
+        if (this.db && this.currentVault === vaultName) return true;
+
+        console.log(`[Storage] Initializing Vault: ${vaultName}...`);
+
         return new Promise((resolve, reject) => {
-            const request = indexedDB.open(DB_NAME, DB_VERSION);
+            const request = indexedDB.open(`Nexus_${vaultName}`, 2); // Version 2 for platform upgrade
 
             request.onerror = (event) => {
-                console.error('[DB] Database error:', event.target.error);
+                console.error('[Storage] Connection failed:', event.target.error);
                 reject(event.target.error);
             };
 
             request.onsuccess = (event) => {
                 this.db = event.target.result;
-                console.log('[DB] Database opened successfully');
+                this.currentVault = vaultName;
+                localStorage.setItem('nexus_current_vault', vaultName);
+
+                // Track availability in metadata vault
+                this._trackVault(vaultName);
+
                 resolve(true);
             };
 
             request.onupgradeneeded = (event) => {
                 const db = event.target.result;
-                console.log('[DB] Upgrading database structure...');
 
-                // 1. Notes Store
-                // A note represents an entity in the graph.
+                // CORE TABLES
                 if (!db.objectStoreNames.contains('notes')) {
                     const notesStore = db.createObjectStore('notes', { keyPath: 'id' });
                     notesStore.createIndex('title', 'title', { unique: false });
@@ -43,24 +52,63 @@ export class LocalDB {
                     notesStore.createIndex('tags', 'tags', { multiEntry: true, unique: false });
                 }
 
-                // 2. Graph Edges Store
-                // Represents Bidirectional Links between notes
                 if (!db.objectStoreNames.contains('edges')) {
                     const edgesStore = db.createObjectStore('edges', { keyPath: 'id', autoIncrement: true });
                     edgesStore.createIndex('source', 'source', { unique: false });
                     edgesStore.createIndex('target', 'target', { unique: false });
                 }
 
-                // 3. Settings Store
-                // Key-value store for app configs
                 if (!db.objectStoreNames.contains('settings')) {
                     db.createObjectStore('settings', { keyPath: 'key' });
+                }
+
+                // NEW: HISTORY / SNAPSHOTS
+                if (!db.objectStoreNames.contains('history')) {
+                    const historyStore = db.createObjectStore('history', { keyPath: 'hid', autoIncrement: true });
+                    historyStore.createIndex('noteId', 'noteId', { unique: false });
+                    historyStore.createIndex('timestamp', 'timestamp', { unique: false });
+                }
+
+                // NEW: PLUGINS / EXTENSIONS
+                if (!db.objectStoreNames.contains('plugins')) {
+                    db.createObjectStore('plugins', { keyPath: 'id' });
                 }
             };
         });
     }
 
-    // --- GENERIC CRUD UTILS ---
+    /**
+     * Unlock the vault with a password (Security Engine hook)
+     */
+    async unlock(password) {
+        const saltBuffer = await this.getSetting('vault_salt');
+        let salt;
+        if (!saltBuffer) {
+            salt = crypto.getRandomValues(new Uint8Array(16));
+            await this.saveSetting('vault_salt', Array.from(salt));
+        } else {
+            salt = new Uint8Array(saltBuffer);
+        }
+
+        this.vaultKey = await SecurityEngine.deriveKey(password, salt);
+        this.isEncrypted = true;
+        console.log(`[Storage] Vault unlocked successfully.`);
+    }
+
+    /**
+     * Internal metadata tracking of available vaults
+     */
+    async _trackVault(name) {
+        // We use a global registry in localStorage to list vaults for the switcher.
+        const vaultsRaw = localStorage.getItem('nexus_vault_registry') || '[]';
+        const vaults = JSON.parse(vaultsRaw);
+        if (!vaults.includes(name)) {
+            vaults.push(name);
+            localStorage.setItem('nexus_vault_registry', JSON.stringify(vaults));
+        }
+    }
+
+    // --- GENERIC ENGINE OPS ---
 
     async _getStore(storeName, mode = 'readonly') {
         if (!this.db) await this.init();
@@ -68,7 +116,7 @@ export class LocalDB {
         return transaction.objectStore(storeName);
     }
 
-    async get(storeName, key) {
+    async getRaw(storeName, key) {
         return new Promise(async (resolve, reject) => {
             const store = await this._getStore(storeName);
             const request = store.get(key);
@@ -77,7 +125,7 @@ export class LocalDB {
         });
     }
 
-    async getAll(storeName) {
+    async getAllRaw(storeName) {
         return new Promise(async (resolve, reject) => {
             const store = await this._getStore(storeName);
             const request = store.getAll();
@@ -86,85 +134,97 @@ export class LocalDB {
         });
     }
 
-    async put(storeName, item) {
+    async putRaw(storeName, item) {
         return new Promise(async (resolve, reject) => {
             const store = await this._getStore(storeName, 'readwrite');
-            item.updatedAt = Date.now();
-            if (!item.createdAt) item.createdAt = Date.now();
-
             const request = store.put(item);
             request.onsuccess = () => resolve(request.result);
             request.onerror = () => reject(request.error);
         });
     }
 
-    async delete(storeName, key) {
-        return new Promise(async (resolve, reject) => {
-            const store = await this._getStore(storeName, 'readwrite');
-            const request = store.delete(key);
-            request.onsuccess = () => resolve(true);
-            request.onerror = () => reject(request.error);
-        });
-    }
+    // --- ENCRYPTION WRAPPERS ---
 
-    // --- DOMAIN SPECIFIC API ---
-
-    // Notes
-    async getNote(id) { return this.get('notes', id); }
-    async getAllNotes() { return this.getAll('notes'); }
     async saveNote(note) {
         if (!note.id) note.id = Date.now().toString() + Math.random().toString(36).substring(2, 9);
-        return this.put('notes', note);
-    }
-    async deleteNote(id) { return this.delete('notes', id); }
+        note.updatedAt = Date.now();
+        if (!note.createdAt) note.createdAt = Date.now();
 
-    // Graph
-    async addEdge(sourceId, targetId) {
-        const store = await this._getStore('edges', 'readwrite');
-        return new Promise((resolve, reject) => {
-            const request = store.put({ source: sourceId, target: targetId, createdAt: Date.now() });
-            request.onsuccess = () => resolve(request.result);
-            request.onerror = () => reject(request.error);
+        // 1. Handle Version History (Snapshot before saving new one)
+        const oldNote = await this.getRaw('notes', note.id);
+        if (oldNote) {
+            await this.putRaw('history', {
+                noteId: note.id,
+                timestamp: oldNote.updatedAt,
+                content: oldNote.content,
+                title: oldNote.title,
+                tags: oldNote.tags
+            });
+        }
+
+        // 2. Encrypt if key exists
+        if (this.isEncrypted && this.vaultKey) {
+            const encryptedData = { ...note };
+            encryptedData.content = await SecurityEngine.encrypt(note.content, this.vaultKey);
+            encryptedData.title = await SecurityEngine.encrypt(note.title, this.vaultKey);
+            encryptedData._encrypted = true;
+            return this.putRaw('notes', encryptedData);
+        }
+
+        return this.putRaw('notes', note);
+    }
+
+    async getNote(id) {
+        const note = await this.getRaw('notes', id);
+        if (!note) return null;
+
+        if (note._encrypted && this.isEncrypted && this.vaultKey) {
+            try {
+                note.content = await SecurityEngine.decrypt(note.content, this.vaultKey);
+                note.title = await SecurityEngine.decrypt(note.title, this.vaultKey);
+                note._encrypted = false;
+            } catch (e) {
+                console.error("[Storage] Decryption failed! Invalid key?", e);
+                note.content = "🔒 [CONTENT ENCRYPTED - PLEASE UNLOCK VAULT]";
+                note.title = "🔒 [TITLE ENCRYPTED]";
+            }
+        }
+        return note;
+    }
+
+    async getAllNotes() {
+        const notes = await this.getAllRaw('notes');
+        const decryptPromises = notes.map(async (n) => {
+            if (n._encrypted && this.isEncrypted && this.vaultKey) {
+                try {
+                    n.content = await SecurityEngine.decrypt(n.content, this.vaultKey);
+                    n.title = await SecurityEngine.decrypt(n.title, this.vaultKey);
+                } catch (e) { }
+            }
+            return n;
+        });
+        return Promise.all(decryptPromises);
+    }
+
+    // Pass throughs
+    async deleteNote(id) {
+        return new Promise(async (r, rj) => {
+            const store = await this._getStore('notes', 'readwrite');
+            const req = store.delete(id);
+            req.onsuccess = () => r(true);
+            req.onerror = () => rj(req.error);
         });
     }
 
-    async getEdgesForNode(nodeId) {
-        if (!this.db) await this.init();
-        return new Promise((resolve, reject) => {
-            const transaction = this.db.transaction(['edges'], 'readonly');
-            const store = transaction.objectStore('edges');
-
-            // Getting both outgoing and incoming
-            const edges = [];
-
-            const sourceIndex = store.index('source');
-            const sourceReq = sourceIndex.getAll(nodeId);
-
-            sourceReq.onsuccess = () => {
-                edges.push(...sourceReq.result);
-
-                const targetIndex = store.index('target');
-                const targetReq = targetIndex.getAll(nodeId);
-
-                targetReq.onsuccess = () => {
-                    edges.push(...targetReq.result);
-                    resolve(edges);
-                };
-                targetReq.onerror = () => reject(targetReq.error);
-            };
-            sourceReq.onerror = () => reject(sourceReq.error);
-        });
-    }
-
-    // Settings
+    async getAll(store) { return this.getAllRaw(store); }
     async getSetting(key) {
-        const res = await this.get('settings', key);
+        const res = await this.getRaw('settings', key);
         return res ? res.value : null;
     }
     async saveSetting(key, value) {
-        return this.put('settings', { key, value });
+        return this.putRaw('settings', { key, value });
     }
 }
 
-// Export singleton
-export const db = new LocalDB();
+// Export singleton engine
+export const db = new StorageEngine();

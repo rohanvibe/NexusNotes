@@ -89,57 +89,59 @@
                 <div class="p-8 text-center text-slate-400 italic">Type to search your knowledge base...</div>
             </div>
         </div>
-    </div>
+        <!-- Command Palette Overlay (Hidden by default) -->
+        <div id="command-palette-root"></div>
 
-    <!-- Main Content Area -->
-    <main class="flex-1 w-full flex flex-col mx-auto transition-opacity duration-200 overflow-x-hidden" id="app-root">
-        <!-- Content gets injected here by the router -->
-        <div class="flex-1 flex items-center justify-center min-h-[50vh]">
-            <div class="flex flex-col items-center gap-4 animate-pulse">
-                <span class="material-symbols-outlined text-4xl text-primary animate-spin"
-                    style="animation-duration: 3s;">sync</span>
-                <p class="text-sm font-medium text-slate-500">Initializing Workspace...</p>
+        <!-- Main Content Area -->
+        <main class="flex-1 w-full flex flex-col mx-auto transition-opacity duration-200 overflow-x-hidden"
+            id="app-root">
+            <!-- Content gets injected here by the router -->
+            <div class="flex-1 flex items-center justify-center min-h-[50vh]">
+                <div class="flex flex-col items-center gap-4 animate-pulse">
+                    <span class="material-symbols-outlined text-4xl text-primary animate-spin"
+                        style="animation-duration: 3s;">sync</span>
+                    <p class="text-sm font-medium text-slate-500">Initializing Workspace...</p>
+                </div>
             </div>
-        </div>
-    </main>
+        </main>
 
-    <!-- Bottom Nav Bar App Shell -->
-    <nav class="sticky bottom-0 w-full bg-white dark:bg-slate-custom border-t border-slate-200 dark:border-border-custom px-6 py-2 pb-6 md:pb-2 flex justify-around items-center z-50"
-        id="app-nav">
-        <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors nav-link"
-            href="#/" data-route="#/"
-            title="Access the principal domestic dashboard for consolidated cognitive appraisal.">
-            <span class="material-symbols-outlined nav-icon">home</span>
-            <span class="text-[10px] font-medium">Home</span>
-        </a>
-        <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors nav-link"
-            href="#/editor" data-route="#/editor"
-            title="Initiate the textual synthesis engine for the curation of mnemomic entities.">
-            <span class="material-symbols-outlined nav-icon">history_edu</span>
-            <span class="text-[10px] font-medium">Editor</span>
-        </a>
-        <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors nav-link"
-            href="#/graph" data-route="#/graph"
-            title="Visualize the multidimensional semantic web of interconnected knowledge nodes.">
-            <span class="material-symbols-outlined nav-icon">hub</span>
-            <span class="text-[10px] font-medium">Graph</span>
-        </a>
-        <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors nav-link"
-            href="#/vaults" data-route="#/vaults"
-            title="Manage the secure, cryptographical repositories for archival data preservation.">
-            <span class="material-symbols-outlined nav-icon">inventory_2</span>
-            <span class="text-[10px] font-medium">Vaults</span>
-        </a>
-        <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors nav-link"
-            href="#/settings" data-route="#/settings"
-            title="Calibrate the fundamental system parameters and architectural configurations.">
-            <span class="material-symbols-outlined nav-icon">settings</span>
-            <span class="text-[10px] font-medium">Settings</span>
-        </a>
-    </nav>
+        <!-- Bottom Nav Bar App Shell -->
+        <nav class="sticky bottom-0 w-full bg-white dark:bg-slate-custom border-t border-slate-200 dark:border-border-custom px-6 py-2 pb-6 md:pb-2 flex justify-around items-center z-50"
+            id="app-nav">
+            <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors nav-link"
+                href="#/" data-route="#/"
+                title="Access the principal domestic dashboard for consolidated cognitive appraisal.">
+                <span class="material-symbols-outlined nav-icon">home</span>
+                <span class="text-[10px] font-medium">Home</span>
+            </a>
+            <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors nav-link"
+                href="#/editor" data-route="#/editor"
+                title="Initiate the textual synthesis engine for the curation of mnemomic entities.">
+                <span class="material-symbols-outlined nav-icon">history_edu</span>
+                <span class="text-[10px] font-medium">Editor</span>
+            </a>
+            <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors nav-link"
+                href="#/graph" data-route="#/graph"
+                title="Visualize the multidimensional semantic web of interconnected knowledge nodes.">
+                <span class="material-symbols-outlined nav-icon">hub</span>
+                <span class="text-[10px] font-medium">Graph</span>
+            </a>
+            <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors nav-link"
+                href="#/vaults" data-route="#/vaults"
+                title="Manage the secure, cryptographical repositories for archival data preservation.">
+                <span class="material-symbols-outlined nav-icon">inventory_2</span>
+                <span class="text-[10px] font-medium">Vaults</span>
+            </a>
+            <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors nav-link"
+                href="#/settings" data-route="#/settings"
+                title="Calibrate the fundamental system parameters and architectural configurations.">
+                <span class="material-symbols-outlined nav-icon">settings</span>
+                <span class="text-[10px] font-medium">Settings</span>
+            </a>
+        </nav>
 
-    <!-- Main Application Script (ES Module) -->
-    <script type="module" src="./src/app.js"></script>
+        <!-- Main Application Script (ES Module) -->
+        <script type="module" src="./src/app.js"></script>
 </body>
 
 </html>

@@ -11,7 +11,8 @@
   "display_override": [
     "window-controls-overlay",
     "tabbed",
-    "minimal-ui"
+    "minimal-ui",
+    "fullscreen"
   ],
   "background_color": "#0f172a",
   "theme_color": "#7c3bed",
@@ -20,7 +21,10 @@
     "productivity",
     "education",
     "utilities",
-    "notes"
+    "notes",
+    "books",
+    "reference",
+    "personalization"
   ],
   "iarc_rating_id": "e675471d-f8ec-4638-bd98-7243c5ee9c9a",
   "related_applications": [
@@ -33,17 +37,21 @@
   "prefer_related_applications": false,
   "scope_extensions": [
     {
-      "origin": "*.rohanvibe.com"
+      "origin": "https://rohanvibe.com"
     },
     {
-      "origin": "rohanvibe.github.io"
+      "origin": "https://nexusnotes.app"
     }
   ],
+  "handle_links": "auto",
   "launch_handler": {
     "client_mode": [
       "navigate-existing",
       "auto"
     ]
+  },
+  "note_taking": {
+    "new_note_url": "./#/editor"
   },
   "file_handlers": [
     {
@@ -184,6 +192,41 @@
       "type": "image/jpeg",
       "form_factor": "narrow",
       "label": "NexusNotes Mobile View"
+    },
+    {
+      "src": "https://images.unsplash.com/photo-1517842645767-c639042777db?auto=format&fit=crop&q=80&w=1280&h=720",
+      "sizes": "1280x720",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "Graph Visualization View"
+    },
+    {
+      "src": "https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&q=80&w=750&h=1334",
+      "sizes": "750x1334",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Mobile Editor View"
+    },
+    {
+      "src": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=1280&h=720",
+      "sizes": "1280x720",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "Knowledge Dashboard"
+    },
+    {
+      "src": "https://images.unsplash.com/photo-1506784365847-bbad939e9335?auto=format&fit=crop&q=80&w=750&h=1334",
+      "sizes": "750x1334",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Note History View"
+    },
+    {
+      "src": "https://images.unsplash.com/photo-1454165833767-027ffea9e7a7?auto=format&fit=crop&q=80&w=1280&h=720",
+      "sizes": "1280x720",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "Settings & Plugins Panel"
     }
   ],
   "shortcuts": [

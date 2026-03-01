@@ -29,16 +29,21 @@ export class Router {
         }
     }
 
-    navigate(path) {
+    navigate(path, silent = false) {
         if (window.location.hash !== path) {
+            if (silent) this._silentNext = true;
             window.location.hash = path;
-        } else {
+        } else if (!silent) {
             // If already on the path, just force re-render
             this.handleRoute(path);
         }
     }
 
     handleHashChange() {
+        if (this._silentNext) {
+            this._silentNext = false;
+            return;
+        }
         this.handleRoute(window.location.hash);
     }
 

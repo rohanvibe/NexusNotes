@@ -40,6 +40,22 @@ export const SettingsComponent = {
                     </div>
                 </section>
 
+                <!-- Danger Zone -->
+                <section>
+                    <h3 class="text-sm font-semibold uppercase tracking-widest text-red-500 mb-4 px-1">Danger Zone</h3>
+                    <div class="bg-white dark:bg-slate-custom border border-red-200 dark:border-red-900/30 rounded-xl overflow-hidden">
+                        <div class="p-4 flex items-center justify-between">
+                            <div>
+                                <p class="font-medium text-slate-900 dark:text-slate-100">Wipe All Data</p>
+                                <p class="text-xs text-slate-500">Permanently erase all local notes and settings</p>
+                            </div>
+                            <button id="btn-clear-data" class="px-3 py-1.5 bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg text-xs font-semibold hover:bg-red-600 hover:text-white transition-colors">
+                                Erase Vault
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
                 <!-- About -->
                 <section class="text-center pt-8">
                      <span class="material-symbols-outlined text-4xl text-primary mb-2">cloud_off</span>

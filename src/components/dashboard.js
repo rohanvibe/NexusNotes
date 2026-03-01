@@ -158,12 +158,12 @@ export const DashboardComponent = {
         const captureInput = document.getElementById('quick-capture-input');
 
         if (captureBtn && captureInput) {
-            captureBtn.addEventListener('click', async () => {
+            const doCapture = async () => {
                 const content = captureInput.value.trim();
                 if (!content) return;
 
                 // Create a basic title from first 30 chars
-                const title = content.split('\\n')[0].substring(0, 30);
+                const title = content.split('\n')[0].substring(0, 30);
 
                 const newNote = {
                     title: title,
@@ -178,6 +178,33 @@ export const DashboardComponent = {
 
                 // Refresh dashboard to show new note
                 window.AppRouter.handleRoute(window.location.hash || '#/');
+            };
+
+            captureBtn.addEventListener('click', doCapture);
+
+            // Shortcuts
+            captureInput.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                    e.preventDefault();
+                    doCapture();
+                }
+            });
+
+            // Make placeholder buttons somewhat functional
+            const captureActions = container.querySelectorAll('.Capture-action-btn'); // I should add this class in render
+            container.querySelectorAll('button').forEach(btn => {
+                const icon = btn.querySelector('.material-symbols-outlined');
+                if (!icon) return;
+
+                if (icon.textContent === 'link') {
+                    btn.onclick = () => { captureInput.value += '[link text](url)'; captureInput.focus(); }
+                }
+                if (icon.textContent === 'sell') {
+                    btn.onclick = () => { captureInput.value += ' #tag '; captureInput.focus(); }
+                }
+                if (icon.textContent === 'mic') {
+                    btn.onclick = () => { alert("Voice capture is coming in the next update!"); }
+                }
             });
         }
     }

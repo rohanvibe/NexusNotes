@@ -92,9 +92,49 @@ export const EditorComponent = {
         let noteIdAttr = container.querySelector('#editor-container').getAttribute('data-note-id');
         let currentNoteId = noteIdAttr === 'new' ? null : noteIdAttr;
 
+        // Undo/Redo History
+        let history = [{ title: titleEl.value, content: contentEl.value, tags: tagsEl.value }];
+        let historyIndex = 0;
+        const MAX_HISTORY = 50;
+
+        const pushHistory = () => {
+            const state = { title: titleEl.value, content: contentEl.value, tags: tagsEl.value };
+            // Simple string comparison to avoid spam
+            if (JSON.stringify(state) === JSON.stringify(history[historyIndex])) return;
+
+            history = history.slice(0, historyIndex + 1);
+            history.push(state);
+            if (history.length > MAX_HISTORY) history.shift();
+            else historyIndex++;
+        };
+
+        const undo = () => {
+            if (historyIndex > 0) {
+                historyIndex--;
+                const state = history[historyIndex];
+                applyState(state);
+                triggerSave(true); // silent
+            }
+        };
+
+        const redo = () => {
+            if (historyIndex < history.length - 1) {
+                historyIndex++;
+                const state = history[historyIndex];
+                applyState(state);
+                triggerSave(true);
+            }
+        };
+
+        const applyState = (state) => {
+            titleEl.value = state.title;
+            contentEl.value = state.content;
+            tagsEl.value = state.tags;
+        };
+
         // Save Logic
         let saveTimeout;
-        const triggerSave = () => {
+        const triggerSave = (isSilent = false) => {
             statusEl.classList.remove('opacity-0');
             statusEl.textContent = "Saving...";
             clearTimeout(saveTimeout);
@@ -113,22 +153,77 @@ export const EditorComponent = {
                 };
 
                 const id = await db.saveNote(noteObj);
+                const isNew = !currentNoteId;
                 currentNoteId = id;
 
-                if (noteIdAttr === 'new') {
-                    window.location.hash = `#/editor?id=${id}`;
+                if (isNew) {
+                    window.AppRouter.navigate(`#/editor?id=${id}`, true); // SILENT Navigate
                     container.querySelector('#editor-container').setAttribute('data-note-id', id);
                     noteIdAttr = id;
                 }
 
                 statusEl.textContent = "Saved";
-                setTimeout(() => { statusEl.classList.add('opacity-0'); }, 2000);
+                setTimeout(() => { if (statusEl.textContent === "Saved") statusEl.classList.add('opacity-0'); }, 2000);
             }, 800);
         };
 
-        titleEl.addEventListener('input', triggerSave);
-        contentEl.addEventListener('input', triggerSave);
-        tagsEl.addEventListener('input', triggerSave);
+        const handleInput = () => {
+            pushHistory();
+            triggerSave();
+        };
+
+        titleEl.addEventListener('input', handleInput);
+        contentEl.addEventListener('input', handleInput);
+        tagsEl.addEventListener('input', handleInput);
+
+        // Keyboard Shortcuts
+        container.addEventListener('keydown', (e) => {
+            const isCtrl = e.ctrlKey || e.metaKey;
+
+            if (isCtrl && e.key === 's') {
+                e.preventDefault();
+                triggerSave();
+            }
+            if (isCtrl && e.key === 'z') {
+                e.preventDefault();
+                undo();
+            }
+            if (isCtrl && (e.key === 'y' || (e.shiftKey && e.key === 'Z'))) {
+                e.preventDefault();
+                redo();
+            }
+            if (isCtrl && e.key === 'b') {
+                e.preventDefault();
+                applyFormat('bold');
+            }
+            if (isCtrl && e.key === 'i') {
+                e.preventDefault();
+                applyFormat('italic');
+            }
+            if (isCtrl && e.key === 'k') {
+                e.preventDefault();
+                applyFormat('link');
+            }
+        });
+
+        const applyFormat = (format) => {
+            const start = contentEl.selectionStart;
+            const end = contentEl.selectionEnd;
+            const text = contentEl.value;
+            const selected = text.substring(start, end);
+            let replacement = "";
+
+            if (format === 'bold') replacement = `**${selected || 'bold text'}**`;
+            if (format === 'italic') replacement = `*${selected || 'italic text'}*`;
+            if (format === 'link') replacement = `[${selected || 'link text'}](url)`;
+            if (format === 'list') replacement = `\n- ${selected || 'list item'}`;
+
+            contentEl.value = text.substring(0, start) + replacement + text.substring(end);
+            contentEl.focus();
+            contentEl.selectionStart = start + (selected ? replacement.length : replacement.length - (format === 'list' ? 0 : 2));
+            contentEl.selectionEnd = contentEl.selectionStart;
+            handleInput();
+        };
 
         // Preview & Edit Toggle Logic
         btnPreview.addEventListener('click', () => {
@@ -149,7 +244,7 @@ export const EditorComponent = {
             if (window.marked && window.DOMPurify) {
                 previewEl.innerHTML = DOMPurify.sanitize(marked.parse(raw));
             } else {
-                previewEl.innerHTML = "<p class='text-red-500'>Markdown rendering failed. Connecting online might be needed.</p>";
+                previewEl.innerHTML = "<p class='text-red-500'>Markdown rendering failed.</p>";
             }
         });
 
@@ -170,7 +265,7 @@ export const EditorComponent = {
 
         // Delete Logic
         btnDelete.addEventListener('click', async () => {
-            if (confirm("Are you sure you want to delete this note? This action cannot be undone.")) {
+            if (confirm("Are you sure you want to delete this note?")) {
                 if (currentNoteId) {
                     await db.deleteNote(currentNoteId);
                 }
@@ -183,34 +278,13 @@ export const EditorComponent = {
             document.body.classList.toggle('focus-mode');
             const isFocus = document.body.classList.contains('focus-mode');
             btnFocus.querySelector('span:last-child').textContent = isFocus ? "UNFOCUS" : "FOCUS";
-            // Optional: Hide tags container too
             container.querySelector('#editor-tags-container').classList.toggle('opacity-0');
         });
-
-        // Disable focus mode when leaving route
-        const clearFocus = () => document.body.classList.remove('focus-mode');
-        window.addEventListener('popstate', clearFocus, { once: true });
 
         // Toolbar formatting logic
         toolbar.querySelectorAll('[data-format]').forEach(btn => {
             btn.addEventListener('click', () => {
-                const format = btn.getAttribute('data-format');
-                const start = contentEl.selectionStart;
-                const end = contentEl.selectionEnd;
-                const text = contentEl.value;
-                const selected = text.substring(start, end);
-                let replacement = "";
-
-                if (format === 'bold') replacement = `**${selected || 'bold text'}**`;
-                if (format === 'italic') replacement = `*${selected || 'italic text'}*`;
-                if (format === 'link') replacement = `[${selected || 'link text'}](url)`;
-                if (format === 'list') replacement = `\n- ${selected || 'list item'}`;
-
-                contentEl.value = text.substring(0, start) + replacement + text.substring(end);
-                contentEl.focus();
-                contentEl.selectionStart = start + replacement.length;
-                contentEl.selectionEnd = start + replacement.length;
-                triggerSave();
+                applyFormat(btn.getAttribute('data-format'));
             });
         });
 

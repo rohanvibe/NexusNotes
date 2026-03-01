@@ -120,7 +120,7 @@ export const DashboardComponent = {
                                 <span class="text-[9px] font-black text-slate-300 uppercase tracking-tighter">${new Date(n.updatedAt).toLocaleDateString()}</span>
                             </div>
                             <h3 class="text-xl font-black text-slate-900 dark:text-slate-100 group-hover:text-primary transition-colors uppercase tracking-tighter line-clamp-1 mb-2">${n.title || 'Untitled'}</h3>
-                            <p class="text-xs font-bold text-slate-400 line-clamp-2 leading-relaxed uppercase tracking-wide opacity-80">${n.content.substring(0, 100)}</p>
+                            <p class="text-xs font-bold text-slate-400 line-clamp-2 leading-relaxed uppercase tracking-wide opacity-80">${(n.content || '').substring(0, 100)}</p>
                             <div class="mt-8 flex items-center gap-2">
                                 ${(n.tags || []).slice(0, 2).map(t => `<span class="text-[8px] font-black px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded uppercase text-slate-500">#${t}</span>`).join('')}
                             </div>

@@ -33,7 +33,7 @@ export const EditorComponent = {
                             ` : backlinks.map(b => `
                                 <a href="#/editor?id=${b.id}" data-route="#/editor?id=${b.id}" class="block p-3 bg-white dark:bg-slate-custom border border-slate-200 dark:border-border-custom rounded-xl hover:border-primary/50 transition-all group">
                                     <p class="text-xs font-bold text-slate-700 dark:text-slate-300 group-hover:text-primary truncate">${b.title || 'Untitled'}</p>
-                                    <p class="text-[10px] text-slate-400 mt-1 line-clamp-1">${b.content.substring(0, 40)}...</p>
+                                    <p class="text-[10px] text-slate-400 mt-1 line-clamp-1">${(b.content || '').substring(0, 40)}...</p>
                                 </a>
                             `).join('')}
                         </div>

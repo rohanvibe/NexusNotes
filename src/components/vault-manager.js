@@ -1,4 +1,4 @@
-import { fileSystem } from '../db/fs-access.js';
+import { fsLayer } from '../db/fs-access.js';
 import { db } from '../db/indexeddb.js';
 
 export const VaultManagerComponent = {
@@ -145,8 +145,19 @@ export const VaultManagerComponent = {
             statusFs.textContent = "Awaiting folder permission...";
             btnFs.disabled = true;
 
-            const success = await window.fileSystem?.exportVaultToDirectory?.(notes);
-
+            let success = false;
+            try {
+                const dirHandle = await fsLayer.openDirectory();
+                if (dirHandle) {
+                    success = true;
+                    for (const note of notes) {
+                        const saved = await fsLayer.exportNoteToMarkdown(dirHandle, note);
+                        if (!saved) success = false;
+                    }
+                }
+            } catch (err) {
+                console.error("Folder export failed", err);
+            }
             if (success) {
                 statusFs.textContent = `Successfully exported ${notes.length} notes!`;
                 statusFs.classList.replace('text-slate-500', 'text-green-500');

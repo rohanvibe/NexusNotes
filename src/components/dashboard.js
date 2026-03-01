@@ -112,13 +112,13 @@ export const DashboardComponent = {
             <section class="space-y-6">
                 <div class="flex items-center justify-between px-1">
                     <h2 class="text-lg font-bold tracking-tight">Your Knowledge</h2>
-                    <a href="#/editor?id=new" class="text-xs text-primary font-bold hover:underline">New Node</a>
+                    <a href="#/editor?id=new" class="text-xs text-primary font-bold hover:underline">New Note</a>
                 </div>
 
                 <!-- Category Navigation -->
                 <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 pt-1" id="category-scroller">
                     <button class="category-chip px-4 py-1.5 rounded-full text-xs font-bold transition-all whitespace-nowrap bg-primary text-white active" data-category="all">
-                        All Nodes
+                        All Notes
                     </button>
                     ${allTags.map(tag => `
                         <button class="category-chip px-4 py-1.5 rounded-full text-xs font-bold transition-all whitespace-nowrap bg-white dark:bg-slate-custom border border-slate-200 dark:border-border-custom text-slate-500 hover:border-primary/40" data-category="${tag}">

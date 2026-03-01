@@ -8,13 +8,13 @@ export const GraphComponent = {
             <!-- Graph overlay UI -->
             <div class="absolute top-6 left-6 z-10 w-72 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border border-slate-200/50 dark:border-slate-700/50 rounded-2xl p-4 shadow-xl text-slate-900 dark:text-slate-200">
                 <h3 class="font-bold text-lg mb-1">Knowledge Graph</h3>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mb-4" id="graph-stats">Loading nodes...</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mb-4" id="graph-stats">Loading notes...</p>
                 
                 <div class="mt-6">
                     <button class="w-full py-2 bg-primary hover:bg-primary/90 rounded-lg text-sm font-bold text-white transition-colors" id="btn-recenter">
                         Recenter Graph
                     </button>
-                     <div class="mt-2 text-xs text-center text-slate-400">Nodes are automatically linked if they share identical tags.</div>
+                     <div class="mt-2 text-xs text-center text-slate-400">Notes are automatically linked if they share identical tags.</div>
                 </div>
             </div>
 
@@ -53,7 +53,7 @@ export const GraphComponent = {
             links: graphLinks
         };
 
-        statsEl.textContent = `${graphData.nodes.length} nodes, ${graphData.links.length} connections`;
+        statsEl.textContent = `${graphData.nodes.length} notes, ${graphData.links.length} connections`;
 
         if (window.ForceGraph) {
 

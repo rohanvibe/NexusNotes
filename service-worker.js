@@ -1,4 +1,4 @@
-const CACHE_NAME = 'stitch-v1';
+const CACHE_NAME = 'nexusnotes-v2';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -9,6 +9,7 @@ const ASSETS_TO_CACHE = [
   './src/core/events.js',
   './src/db/indexeddb.js',
   './src/db/fs-access.js',
+  './src/core/sync.js',
   './src/components/dashboard.js',
   './src/components/editor.js',
   './src/components/graph.js',
@@ -16,7 +17,8 @@ const ASSETS_TO_CACHE = [
   './src/components/settings.js',
   './icons/icon-192.png',
   './icons/icon-512.png',
-  './icons/icon-512-maskable.png'
+  './icons/icon-512-maskable.png',
+  './icons/icon-192-maskable.png'
 ];
 
 // Install Event: Cache app assets
@@ -24,7 +26,6 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       console.log('[Service Worker] Caching app shell...');
-      // We use addAll but wrap in try-catch/individual adds to prevent one failing asset from breaking the whole cache
       return Promise.allSettled(
         ASSETS_TO_CACHE.map(url => cache.add(url).catch(err => console.warn(`Failed to cache ${url}:`, err)))
       );
@@ -50,50 +51,63 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Fetch Event: Network-first Strategy for HTML, Cache-first for Assets
+// Fetch Event
 self.addEventListener('fetch', (event) => {
   const request = event.request;
   const url = new URL(request.url);
 
-  // Ignore non-GET requests and cross-origin requests
-  if (request.method !== 'GET' || !url.origin.includes(self.location.origin)) {
-    return;
-  }
+  // Ignore non-GET and cross-origin (except CDN)
+  if (request.method !== 'GET') return;
 
-  // Handle Navigation requests (HTML pages)
+  const isCdn = url.hostname.includes('cdn') || url.hostname.includes('cdnjs') || url.hostname.includes('unpkg');
+  const isSameOrigin = url.origin === self.location.origin;
+
+  if (!isSameOrigin && !isCdn) return;
+
+  // SPA navigation logic
   if (request.mode === 'navigate') {
     event.respondWith(
-      // Always try to serve index.html for navigation due to SPA routing
-      caches.match('./index.html').then(response => {
-        return response || fetch(request);
-      })
+      fetch(request).catch(() => caches.match('./index.html'))
     );
     return;
   }
 
-  // Handle other Asset requests (CSS, JS, Images)
+  // Stale-while-revalidate for assets
   event.respondWith(
-    caches.match(request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-
-      // If not in cache, fetch from network and cache it dynamically
-      return fetch(request).then((networkResponse) => {
-        // Don't cache bad responses
-        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.match(request).then((response) => {
+        const fetchPromise = fetch(request).then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            cache.put(request, networkResponse.clone());
+          }
           return networkResponse;
-        }
-
-        const responseToCache = networkResponse.clone();
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(request, responseToCache);
         });
-
-        return networkResponse;
-      }).catch(() => {
-        console.error('[Service Worker] Fetch failed, returning offline fallback for:', request.url);
+        return response || fetchPromise;
       });
     })
   );
 });
+
+// Periodic Background Sync
+self.addEventListener('periodicsync', (event) => {
+  if (event.tag === 'sync-notes') {
+    console.log('[Service Worker] Periodic sync triggered');
+    event.waitUntil(syncNotes());
+  }
+});
+
+async function syncNotes() {
+  // Logic to sync notes in the background
+  // This would typically call a backend or check for updates
+  console.log('[Service Worker] Executing background sync logic...');
+  // In a real app: await fetch('/api/sync');
+}
+
+// Background Sync (One-off)
+self.addEventListener('sync', (event) => {
+  if (event.tag === 'flush-sync-queue') {
+    console.log('[Service Worker] Flush sync queue triggered');
+    // Logic to flush the indexedDB sync queue
+  }
+});
+

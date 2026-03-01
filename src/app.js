@@ -165,15 +165,59 @@ const initApp = async () => {
         return;
     }
 
-    // 3. Register Service Worker
+    // 3. Register Service Worker & PWA Features
     if ('serviceWorker' in navigator) {
         try {
             const registration = await navigator.serviceWorker.register('./service-worker.js');
             console.log('[Service Worker] Registered with scope:', registration.scope);
+
+            // Periodic Sync Registration
+            if ('periodicSync' in registration) {
+                const status = await navigator.permissions.query({ name: 'periodic-background-sync' });
+                if (status.state === 'granted') {
+                    await registration.periodicSync.register('sync-notes', {
+                        minInterval: 24 * 60 * 60 * 1000 // 24 hours
+                    });
+                    console.log('[PWA] Periodic Sync registered');
+                }
+            }
         } catch (error) {
             console.error('[Service Worker] Registration failed:', error);
         }
     }
+
+    // 3.5 Handle Advanced PWA Launch/File/Share
+    const initAdvancedPWA = () => {
+        // Handle Launch Queue (File Handling & Protocol Launch)
+        if ('launchQueue' in window) {
+            window.launchQueue.setConsumer(async (launchParams) => {
+                console.log('[PWA] Launch Parameters:', launchParams);
+
+                if (launchParams.files && launchParams.files.length > 0) {
+                    for (const fileHandle of launchParams.files) {
+                        const file = await fileHandle.getFile();
+                        const content = await file.text();
+                        console.log(`[PWA] Opened file: ${file.name}`);
+                        // Navigate to editor with content (simplified)
+                        window.location.hash = `#/editor?import=${encodeURIComponent(content)}&name=${encodeURIComponent(file.name)}`;
+                    }
+                }
+            });
+        }
+
+        // Handle Share Target
+        const urlParams = new URLSearchParams(window.location.search);
+        const shareTitle = urlParams.get('title');
+        const shareText = urlParams.get('text');
+        const shareUrl = urlParams.get('url');
+
+        if (shareTitle || shareText || shareUrl) {
+            console.log('[PWA] Received shared content:', { shareTitle, shareText, shareUrl });
+            const combinedContent = `${shareTitle ? '# ' + shareTitle + '\n\n' : ''}${shareText || ''}${shareUrl ? '\n\n' + shareUrl : ''}`;
+            window.location.hash = `#/editor?content=${encodeURIComponent(combinedContent)}`;
+        }
+    };
+    initAdvancedPWA();
 
     // 4. Initialize Sync Engine
     await syncEngine.loadQueue();

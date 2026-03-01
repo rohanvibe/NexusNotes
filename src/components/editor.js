@@ -3,12 +3,22 @@ import { db } from '../db/indexeddb.js';
 export const EditorComponent = {
     async render() {
         // Parse URL params query
-        const urlParams = new URLSearchParams(window.location.hash.split('?')[1]);
+        const hash = window.location.hash;
+        const queryIndex = hash.indexOf('?');
+        const urlParams = new URLSearchParams(queryIndex !== -1 ? hash.substring(queryIndex + 1) : '');
         const noteId = urlParams.get('id');
+        const importContent = urlParams.get('import');
+        const importName = urlParams.get('name');
+        const sharedContent = urlParams.get('content');
+
         let note = null;
 
         if (noteId) {
             note = await db.getNote(noteId);
+        } else if (importContent) {
+            note = { title: importName || 'Imported Note', content: decodeURIComponent(importContent), tags: ['imported'] };
+        } else if (sharedContent) {
+            note = { title: 'Shared Note', content: decodeURIComponent(sharedContent), tags: ['shared'] };
         }
 
         if (!note) {

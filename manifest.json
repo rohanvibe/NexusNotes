@@ -3,12 +3,14 @@
   "short_name": "NexusNotes",
   "id": "nexusnotes.rohanvibe",
   "lang": "en-US",
+  "dir": "ltr",
   "description": "Offline-first, local-first power-user knowledge management system.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "display_override": [
     "window-controls-overlay",
+    "tabbed",
     "minimal-ui"
   ],
   "background_color": "#0f172a",
@@ -17,11 +19,95 @@
   "categories": [
     "productivity",
     "education",
-    "utilities"
+    "utilities",
+    "notes"
   ],
   "iarc_rating_id": "e675471d-f8ec-4638-bd98-7243c5ee9c9a",
-  "related_applications": [],
+  "related_applications": [
+    {
+      "platform": "windows",
+      "url": "https://www.microsoft.com/p/nexusnotes/rohanvibe",
+      "id": "rohanvibe.nexusnotes"
+    }
+  ],
   "prefer_related_applications": false,
+  "scope_extensions": [
+    {
+      "origin": "*.rohanvibe.com"
+    },
+    {
+      "origin": "rohanvibe.github.io"
+    }
+  ],
+  "launch_handler": {
+    "client_mode": [
+      "navigate-existing",
+      "auto"
+    ]
+  },
+  "file_handlers": [
+    {
+      "action": "./#/editor",
+      "accept": {
+        "text/markdown": [
+          ".md",
+          ".markdown"
+        ],
+        "text/plain": [
+          ".txt"
+        ],
+        "application/json": [
+          ".nexus"
+        ]
+      },
+      "icons": [
+        {
+          "src": "./icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ],
+      "launch_type": "single-client"
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+nexus",
+      "url": "./#/editor?uri=%s"
+    },
+    {
+      "protocol": "mailto",
+      "url": "./#/editor?mailto=%s"
+    }
+  ],
+  "share_target": {
+    "action": "./#/editor",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "widgets": [
+    {
+      "name": "NexusNotes Quick Note",
+      "description": "Quickly capture notes from your home screen.",
+      "tag": "quick-note",
+      "template": "widget-template",
+      "ms_ac_template": "{ \"type\": \"AdaptiveCard\", \"body\": [ { \"type\": \"TextBlock\", \"text\": \"NexusNotes Quick Capture\" } ], \"actions\": [ { \"type\": \"Action.OpenUrl\", \"title\": \"New Note\", \"url\": \"https://nexusnotes.app/#/editor\" } ] }",
+      "icons": [
+        {
+          "src": "./icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
   "icons": [
     {
       "src": "./icons/icon-48.png",
